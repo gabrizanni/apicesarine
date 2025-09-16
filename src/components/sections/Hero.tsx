@@ -1,0 +1,90 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Play } from 'lucide-react';
+import { Button } from '@/components/ui/custom-button';
+import heroImage from '@/assets/hero-classroom.jpg';
+
+const Hero = () => {
+  return (
+    <section className="relative bg-gradient-hero overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Content */}
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <h1 className="text-4xl lg:text-6xl font-bold text-slate leading-tight">
+                Portiamo le api
+                <span className="text-forest block">a scuola.</span>
+              </h1>
+              <p className="text-xl text-slate/80 max-w-lg">
+                Laboratori esperienziali per scoprire scienza, sostenibilità e meraviglia – 
+                direttamente in classe.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button asChild variant="hero" size="xl">
+                <Link to="/prenota" className="group">
+                  Richiedi un laboratorio
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-smooth" />
+                </Link>
+              </Button>
+              
+              <Button asChild variant="outline" size="xl" className="border-slate/20">
+                <Link to="/galleria" className="group">
+                  <Play className="mr-2 h-5 w-5" />
+                  Guarda i video
+                </Link>
+              </Button>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-8 pt-8 border-t border-slate/10">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-forest">500+</div>
+                <div className="text-sm text-slate/60">Scuole raggiunte</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-forest">50k+</div>
+                <div className="text-sm text-slate/60">Studenti coinvolti</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-forest">15</div>
+                <div className="text-sm text-slate/60">Regioni coperte</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Image */}
+          <div className="relative">
+            <div className="relative z-10 rounded-3xl overflow-hidden shadow-card">
+              <img
+                src={heroImage}
+                alt="Bambini che partecipano a un laboratorio sulle api in classe"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            
+            {/* Decorative elements */}
+            <div className="absolute -top-4 -right-4 w-24 h-24 bg-honey/20 rounded-full blur-xl"></div>
+            <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-forest/10 rounded-full blur-xl"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Background pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <svg className="w-full h-full" viewBox="0 0 100 100" fill="none">
+          <defs>
+            <pattern id="hexagon" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <polygon points="10,1 18,6 18,14 10,19 2,14 2,6" fill="currentColor" />
+            </pattern>
+          </defs>
+          <rect width="100" height="100" fill="url(#hexagon)" />
+        </svg>
+      </div>
+    </section>
+  );
+};
+
+export default Hero;

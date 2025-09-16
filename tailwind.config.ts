@@ -13,7 +13,23 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        inter: ['Inter', 'sans-serif'],
+      },
       colors: {
+        // Brand colors
+        honey: {
+          DEFAULT: "hsl(var(--honey))",
+          light: "hsl(var(--honey-light))",
+        },
+        forest: {
+          DEFAULT: "hsl(var(--forest))",
+          light: "hsl(var(--forest-light))",
+        },
+        slate: "hsl(var(--slate))",
+        cream: "hsl(var(--cream))",
+        
+        // Semantic tokens
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
