@@ -1,73 +1,133 @@
-# Welcome to your Lovable project
+# Laboratori Didattici
 
-## Project info
+Un'applicazione web per la gestione di laboratori didattici scolastici con sistema di prenotazione e mini-CMS amministrativo.
 
-**URL**: https://lovable.dev/projects/a9eb9ace-86b1-46d8-95f1-6b09fadcd285
+## Funzionalità
 
-## How can I edit this code?
+### Frontend
+- 🏠 **Homepage** con sezioni hero, come funziona, USP e anteprima laboratori
+- 📚 **Pagina Laboratori** con lista dei programmi disponibili
+- 📋 **Sistema di Prenotazione** con form multi-step validato
+- 👥 **Pagina Educatori** con profili del team
+- 📖 **Sezione Storie** con testimonianze e case study
+- 🖼️ **Galleria** fotografica dei laboratori
+- 📞 **Contatti** con informazioni e form
+- 📄 **Materiali per Docenti** con risorse scaricabili
 
-There are several ways of editing your application.
+### Backend (Supabase)
+- 🗄️ **Database** con tabelle per workshop, educatori, post e richieste
+- 🔐 **Mini-CMS Admin** protetto da password per gestione contenuti
+- 📧 **Sistema Email** automatico per conferme e notifiche
+- 📄 **Generazione PDF** per riepiloghi prenotazioni
+- 🛡️ **Protezioni Anti-Bot** con rate limiting e honeypot
 
-**Use Lovable**
+## Configurazione
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a9eb9ace-86b1-46d8-95f1-6b09fadcd285) and start prompting.
+### Variabili d'Ambiente Richieste
 
-Changes made via Lovable will be committed automatically to this repo.
+Le seguenti variabili devono essere configurate nei **Supabase Secrets**:
 
-**Use your preferred IDE**
+```bash
+# Admin Configuration
+ADMIN_EMAIL="admin@tuodominio.it"          # Email per ricevere notifiche prenotazioni
+ADMIN_PASS="password_sicura_admin"         # Password per accesso admin /admin
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# Email Configuration (Resend.com)
+RESEND_API_KEY="re_xxxxxxxxxx"             # API Key da Resend.com
 ```
 
-**Edit a file directly in GitHub**
+### Setup Email (Resend)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. **Registrati su Resend**: Vai su [resend.com](https://resend.com) e crea un account
+2. **Verifica Dominio**: Verifica il tuo dominio su [resend.com/domains](https://resend.com/domains)
+3. **Crea API Key**: Genera una API key su [resend.com/api-keys](https://resend.com/api-keys)
+4. **Configura Secret**: Aggiungi la `RESEND_API_KEY` nei secrets di Supabase
 
-**Use GitHub Codespaces**
+### Accesso Admin
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **URL**: `/admin`
+- **Password**: Quella configurata nella variabile `ADMIN_PASS`
+- **Funzionalità**: CRUD per Workshop, Educatori, Post e visualizzazione Richieste
 
-## What technologies are used for this project?
+## Test del Sistema di Prenotazione
 
-This project is built with:
+### Test Funzionalità Base
+1. Vai su `/prenota`
+2. Compila tutti i campi obbligatori
+3. Accetta i consensi privacy
+4. Invia la richiesta
+5. Verifica reindirizzamento alla pagina di successo
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Test Email
+Con `RESEND_API_KEY` configurata:
+- ✅ Admin riceve notifica con dettagli completi
+- ✅ Richiedente riceve conferma con riepilogo
+- ✅ Email HTML responsive e professionale
 
-## How can I deploy this project?
+### Test Protezioni Anti-Bot
+- ✅ **Rate Limiting**: Max 3 richieste ogni 15 minuti per IP
+- ✅ **Honeypot**: Campo nascosto per bloccare bot
+- ✅ **Timestamp**: Verifica che il form non sia inviato troppo velocemente
+- ✅ **Validazione Server**: Zod valida tutti i campi lato server
 
-Simply open [Lovable](https://lovable.dev/projects/a9eb9ace-86b1-46d8-95f1-6b09fadcd285) and click on Share -> Publish.
+### Test PDF
+- ✅ Generazione automatica del riepilogo
+- ✅ Download disponibile nella pagina di successo
+- ✅ Formato HTML (placeholder per PDF reale)
 
-## Can I connect a custom domain to my Lovable project?
+## Struttura Database
 
-Yes, you can!
+```sql
+-- Workshops (Laboratori)
+workshops: id, title, description, duration_minutes, max_participants, price, is_active
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+-- Educators (Educatori)  
+educators: id, name, bio, specialization, email, phone, avatar_url, is_active
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+-- Posts (Articoli/Storie)
+posts: id, title, content, excerpt, featured_image_url, status, published_at
+
+-- Booking Requests (Richieste Prenotazione)
+booking_requests: id, organization, requester_name, requester_email, requester_phone, 
+                 participants_count, preferred_date, message, status, notes
+```
+
+## Tecnologie
+
+- **Frontend**: React, TypeScript, Tailwind CSS, Vite
+- **Backend**: Supabase (PostgreSQL, Edge Functions)
+- **Autenticazione**: Password-based per admin
+- **Email**: Resend.com
+- **Validazione**: Zod (client + server)
+- **UI Components**: shadcn/ui
+- **Routing**: React Router
+
+## Sviluppo
+
+```bash
+# Installazione dipendenze
+npm install
+
+# Sviluppo locale
+npm run dev
+
+# Build per produzione
+npm run build
+```
+
+## Deploy
+
+L'applicazione è configurata per il deploy automatico su Lovable con:
+- Build automatico del frontend
+- Deploy automatico delle Edge Functions
+- Configurazione automatica del database Supabase
+
+---
+
+**Nota**: Assicurati di configurare tutte le variabili d'ambiente nei secrets di Supabase prima di testare il sistema di prenotazione completo.
+
+## Link Utili
+
+- **Progetto Lovable**: https://lovable.dev/projects/a9eb9ace-86b1-46d8-95f1-6b09fadcd285
+- **Supabase Dashboard**: Dashboard del progetto per gestione database e secrets
+- **Resend.com**: Per configurazione email service

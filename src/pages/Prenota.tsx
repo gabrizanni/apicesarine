@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, GraduationCap, AlertTriangle } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/custom-button';
@@ -12,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const bookingSchema = z.object({
   schoolType: z.string().min(1, "Seleziona il tipo di istituto"),
@@ -42,7 +44,14 @@ type BookingForm = z.infer<typeof bookingSchema>;
 const Prenota = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [formTimestamp, setFormTimestamp] = useState<number>();
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Set timestamp when component mounts for anti-bot protection
+    setFormTimestamp(Date.now());
+  }, []);
 
   const form = useForm<BookingForm>({
     resolver: zodResolver(bookingSchema),
@@ -57,22 +66,50 @@ const Prenota = () => {
     setIsSubmitting(true);
     
     try {
-      // Simula invio dati (in produzione: API call)
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      // Add timestamp for anti-bot protection
+      const submissionData = {
+        ...data,
+        timestamp: formTimestamp
+      };
+
+      // Call the edge function
+      const { data: result, error } = await supabase.functions.invoke('submit-booking', {
+        body: submissionData
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Errore nel server');
+      }
+
+      if (!result?.success) {
+        throw new Error(result?.error || 'Errore sconosciuto');
+      }
+
       toast({
         title: "Richiesta inviata con successo!",
         description: "Ti ricontatteremo entro 24 ore per confermare tutti i dettagli.",
       });
+
+      // Redirect to success page with booking details
+      const searchParams = new URLSearchParams({
+        id: result.bookingId,
+        school: data.schoolName,
+        contact: data.contactName,
+        email: data.email,
+        phone: data.phone,
+        program: data.workshopProgram,
+        students: data.students,
+        classes: data.classes,
+        ...(result.pdfDownload && { pdf: result.pdfDownload })
+      });
+
+      navigate(`/prenota/successo?${searchParams.toString()}`);
       
-      // Reset form
-      form.reset();
-      setCurrentStep(1);
-      
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Submission error:', error);
       toast({
         title: "Errore nell'invio",
-        description: "Si è verificato un problema. Riprova o contattaci direttamente.",
+        description: error.message || "Si è verificato un problema. Riprova o contattaci direttamente.",
         variant: "destructive"
       });
     } finally {
