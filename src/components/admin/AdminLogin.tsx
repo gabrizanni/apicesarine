@@ -6,19 +6,30 @@ import { Label } from '@/components/ui/label';
 import { Shield } from 'lucide-react';
 
 interface AdminLoginProps {
-  onLogin: (password: string) => boolean;
+  onLogin: (email: string, password: string) => Promise<boolean>;
 }
 
 export const AdminLogin = ({ onLogin }: AdminLoginProps) => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = onLogin(password);
-    if (!success) {
-      setError('Password non valida');
-      setPassword('');
+    setError('');
+    setIsLoading(true);
+    
+    try {
+      const success = await onLogin(email, password);
+      if (!success) {
+        setError('Credenziali non valide o accesso non autorizzato');
+        setPassword('');
+      }
+    } catch (error) {
+      setError('Si è verificato un errore durante il login');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -37,6 +48,17 @@ export const AdminLogin = ({ onLogin }: AdminLoginProps) => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@example.com"
+                required
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
@@ -50,8 +72,8 @@ export const AdminLogin = ({ onLogin }: AdminLoginProps) => {
             {error && (
               <p className="text-sm text-destructive">{error}</p>
             )}
-            <Button type="submit" className="w-full">
-              Accedi
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Accesso in corso...' : 'Accedi'}
             </Button>
           </form>
         </CardContent>
