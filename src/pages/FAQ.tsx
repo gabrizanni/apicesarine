@@ -186,13 +186,13 @@ const FAQ = () => {
       />
 
       {/* Header */}
-      <section className="bg-gradient-hero py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="bg-gradient-hero py-12 sm:py-16">
+        <div className="container-responsive">
           <div className="text-center">
-            <h1 className="text-4xl lg:text-5xl font-bold text-slate mb-4">
+            <h1 className="font-bold text-slate mb-4">
               Domande Frequenti
             </h1>
-            <p className="text-xl text-slate/80 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-slate/80 max-w-3xl mx-auto">
               Trova rapidamente le risposte che cerchi sui nostri laboratori didattici.
               Non trovi quello che cerchi? Contattaci direttamente!
             </p>
@@ -201,9 +201,9 @@ const FAQ = () => {
       </section>
 
       {/* Category Filter */}
-      <section className="py-8 bg-background border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap gap-3 justify-center">
+      <section className="py-6 sm:py-8 bg-background border-b border-border">
+        <div className="container-responsive">
+          <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
             {categories.map((category) => {
               const Icon = category.icon;
               const isActive = selectedCategory === category.id;
@@ -214,11 +214,13 @@ const FAQ = () => {
                   variant={isActive ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 text-xs sm:text-sm focus-ring"
+                  aria-label={`Filtra per categoria ${category.label}`}
                 >
-                  <Icon className="h-4 w-4" aria-hidden="true" />
-                  <span>{category.label}</span>
-                  <Badge variant="secondary" className="ml-2">
+                  <Icon className="h-3 w-3 sm:h-4 sm:w-4" aria-hidden="true" />
+                  <span className="hidden sm:inline">{category.label}</span>
+                  <span className="sm:hidden">{category.label.split(' ')[0]}</span>
+                  <Badge variant="secondary" className="ml-1 sm:ml-2 text-xs">
                     {getCategoryCount(category.id)}
                   </Badge>
                 </Button>
@@ -229,8 +231,8 @@ const FAQ = () => {
       </section>
 
       {/* FAQ Content */}
-      <section className="py-16 bg-background">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-12 sm:py-16 bg-background">
+        <div className="container-responsive max-w-4xl">
           <div className="mb-8">
             <p className="text-muted-foreground text-center">
               Mostrando <strong>{filteredFAQ.length}</strong> {filteredFAQ.length === 1 ? 'domanda' : 'domande'}
@@ -240,33 +242,60 @@ const FAQ = () => {
             </p>
           </div>
 
-          <Accordion type="single" collapsible className="space-y-4">
-            {filteredFAQ.map((faq, index) => (
-              <AccordionItem 
-                key={faq.id} 
-                value={faq.id}
-                className="border border-border rounded-lg bg-card shadow-soft hover:shadow-card transition-shadow"
-              >
-                <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                  <div className="flex items-start space-x-4 text-left">
-                    <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm font-semibold text-primary">
-                      {index + 1}
+          {/* Mobile: Single Column Accordion */}
+          <div className="md:hidden">
+            <Accordion type="single" collapsible className="space-y-4">
+              {filteredFAQ.map((faq, index) => (
+                <AccordionItem 
+                  key={faq.id} 
+                  value={faq.id}
+                  className="border border-border rounded-lg bg-card shadow-soft hover:shadow-card transition-shadow"
+                >
+                  <AccordionTrigger className="px-4 py-4 text-left hover:no-underline focus-ring">
+                    <div className="flex items-start space-x-3 text-left">
+                      <div className="flex-shrink-0 w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center text-xs font-semibold text-primary">
+                        {index + 1}
+                      </div>
+                      <h3 className="text-base font-medium text-foreground group-hover:text-primary transition-colors">
+                        {faq.question}
+                      </h3>
                     </div>
-                    <h3 className="text-lg font-medium text-foreground group-hover:text-primary transition-colors">
-                      {faq.question}
-                    </h3>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="ml-9">
+                      <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          {/* Desktop: Two Column Grid */}
+          <div className="hidden md:grid md:grid-cols-2 gap-6">
+            {filteredFAQ.map((faq, index) => (
+              <div 
+                key={faq.id}
+                className="border border-border rounded-lg bg-card shadow-soft hover:shadow-card transition-shadow p-6"
+              >
+                <div className="flex items-start space-x-4 mb-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm font-semibold text-primary">
+                    {index + 1}
                   </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-6">
-                  <div className="ml-12">
-                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                      {faq.answer}
-                    </p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
+                  <h3 className="text-lg font-medium text-foreground">
+                    {faq.question}
+                  </h3>
+                </div>
+                <div className="ml-12">
+                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {faq.answer}
+                  </p>
+                </div>
+              </div>
             ))}
-          </Accordion>
+          </div>
 
           {filteredFAQ.length === 0 && (
             <div className="text-center py-12">
@@ -279,22 +308,22 @@ const FAQ = () => {
       </section>
 
       {/* Contact CTA */}
-      <section className="py-16 bg-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center bg-gradient-hero rounded-3xl p-12">
-            <h2 className="text-2xl font-bold text-slate mb-4">
+      <section className="py-12 sm:py-16 bg-muted">
+        <div className="container-responsive">
+          <div className="text-center bg-gradient-hero rounded-3xl p-6 sm:p-12">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate mb-4">
               Non hai trovato la risposta che cercavi?
             </h2>
-            <p className="text-slate/80 mb-6 max-w-2xl mx-auto">
+            <p className="text-slate/80 mb-6 max-w-2xl mx-auto text-sm sm:text-base">
               Siamo qui per aiutarti! Contattaci direttamente e ti risponderemo 
               nel minor tempo possibile.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="nature" size="lg" asChild>
-                <a href="/contatti">Contattaci ora</a>
+            <div className="mobile-stack">
+              <Button variant="nature" size="lg" asChild className="focus-ring">
+                <a href="/contatti" aria-label="Vai alla pagina contatti">Contattaci ora</a>
               </Button>
-              <Button variant="outline" size="lg" asChild>
-                <a href="/prenota">Richiedi un laboratorio</a>
+              <Button variant="outline" size="lg" asChild className="focus-ring">
+                <a href="/prenota" aria-label="Richiedi un laboratorio didattico">Richiedi un laboratorio</a>
               </Button>
             </div>
           </div>
