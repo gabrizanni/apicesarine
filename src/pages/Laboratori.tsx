@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, Users, Euro, Download, ArrowRight, Target } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
+import SEOHead from '@/components/common/SEOHead';
 import { Button } from '@/components/ui/custom-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { pageSEO, generateCourseStructuredData } from '@/utils/seo';
 
 const Laboratori = () => {
   const workshops = [
@@ -73,8 +75,25 @@ const Laboratori = () => {
     }
   ];
 
+  const seoData = {
+    ...pageSEO.laboratori,
+    canonical: "https://api-famiglia.lovable.app/laboratori",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": ["ItemList", "EducationalOrganization"],
+      "name": "Laboratori Educativi sulle Api",
+      "description": "Programmi educativi progettati specificamente per ogni fascia d'età",
+      "itemListElement": workshops.map((workshop, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "item": generateCourseStructuredData(workshop)
+      }))
+    }
+  };
+
   return (
     <Layout>
+      <SEOHead {...seoData} />
       {/* Header */}
       <section className="bg-gradient-hero py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
