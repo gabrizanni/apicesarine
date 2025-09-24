@@ -1,30 +1,23 @@
 import React from 'react';
 import { Search, Calendar, GraduationCap } from 'lucide-react';
-
 const HowItWorks = () => {
-  const steps = [
-    {
-      number: "01",
-      icon: Search,
-      title: "Scegli il programma",
-      description: "Esplora i nostri laboratori per età e obiettivi didattici. Ogni programma è progettato per stimolare curiosità e apprendimento."
-    },
-    {
-      number: "02", 
-      icon: Calendar,
-      title: "Concorda la data",
-      description: "Compila il modulo di richiesta indicando le tue preferenze. Ti ricontatteremo entro 24 ore per organizzare tutto."
-    },
-    {
-      number: "03",
-      icon: GraduationCap,
-      title: "Laboratorio in classe",
-      description: "I nostri esperti portano tutto il necessario. Gli studenti vivranno un'esperienza educativa indimenticabile."
-    }
-  ];
-
-  return (
-    <section className="py-16 bg-gradient-to-br from-honey/15 via-cream/70 to-forest/8">
+  const steps = [{
+    number: "01",
+    icon: Search,
+    title: "Scegli il programma",
+    description: "Esplora i nostri laboratori per età e obiettivi didattici. Ogni programma è progettato per stimolare curiosità e apprendimento."
+  }, {
+    number: "02",
+    icon: Calendar,
+    title: "Concorda la data",
+    description: "Compila il modulo di richiesta indicando le tue preferenze. Ti ricontatteremo entro 24 ore per organizzare tutto."
+  }, {
+    number: "03",
+    icon: GraduationCap,
+    title: "Laboratorio in classe",
+    description: "I nostri esperti portano tutto il necessario. Gli studenti vivranno un'esperienza educativa indimenticabile."
+  }];
+  return <section className="py-16 bg-gradient-to-br from-honey/15 via-cream/70 to-forest/8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-slate mb-4">
@@ -37,12 +30,11 @@ const HowItWorks = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative">
           {/* Connection lines (hidden on mobile) */}
-          <div className="hidden lg:block absolute top-24 left-1/6 w-2/3 h-0.5 bg-gradient-to-r from-honey to-forest opacity-30"></div>
+          
           
           {steps.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <div key={index} className="relative text-center group">
+          const Icon = step.icon;
+          return <div key={index} className="relative text-center group">
                 {/* Step number */}
                 <div className="mb-6 relative">
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-honey rounded-full shadow-honey border-4 border-white group-hover:border-forest group-hover:scale-110 transition-all duration-300 relative z-10">
@@ -59,13 +51,10 @@ const HowItWorks = () => {
                 <p className="text-muted-foreground leading-relaxed">
                   {step.description}
                 </p>
-              </div>
-            );
-          })}
+              </div>;
+        })}
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default HowItWorks;

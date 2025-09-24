@@ -3,10 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Play } from 'lucide-react';
 import { Button } from '@/components/ui/custom-button';
 import heroImage from '@/assets/hero-classroom.jpg';
-
 const Hero = () => {
-  return (
-    <section className="relative bg-gradient-to-br from-honey/15 via-cream/70 to-forest/8 overflow-hidden">
+  return <section className="relative bg-gradient-to-br from-honey/15 via-cream/70 to-forest/8 overflow-hidden">
       <div className="container-responsive py-12 sm:py-16 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
@@ -58,12 +56,7 @@ const Hero = () => {
           {/* Image */}
           <div className="relative order-first lg:order-last">
             <div className="relative z-10 rounded-3xl overflow-hidden shadow-card aspect-video">
-              <img
-                src={heroImage}
-                alt="Bambini che partecipano a un laboratorio sulle api in classe"
-                className="w-full h-full object-cover image-lazy"
-                loading="eager"
-              />
+              <img src={heroImage} alt="Bambini che partecipano a un laboratorio sulle api in classe" className="w-full h-full object-cover image-lazy" loading="eager" />
               
               {/* Mobile CTA Overlay - Always visible on mobile */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-end justify-center lg:hidden">
@@ -81,17 +74,11 @@ const Hero = () => {
               <div className="absolute inset-0 hidden lg:flex items-center justify-center">
                 <div className="mobile-stack p-8">
                   <Button asChild variant="hero" size="lg" className="shadow-lg hover:shadow-xl animate-fade-in focus-ring">
-                    <Link to="/prenota" className="group" aria-label="Richiedi un laboratorio didattico">
-                      Richiedi un laboratorio
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-smooth" />
-                    </Link>
+                    
                   </Button>
                   
                   <Button asChild variant="outline" size="lg" className="bg-white/90 backdrop-blur-sm border-white hover:bg-white shadow-lg hover:shadow-xl animate-fade-in focus-ring">
-                    <Link to="/galleria" className="group" aria-label="Guarda i video dei laboratori">
-                      <Play className="mr-2 h-4 w-4" />
-                      Guarda i video
-                    </Link>
+                    
                   </Button>
                 </div>
               </div>
@@ -115,8 +102,6 @@ const Hero = () => {
           <rect width="100" height="100" fill="url(#hexagon)" />
         </svg>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default Hero;
