@@ -47,6 +47,7 @@ export const EducatorManager = () => {
 
   const fetchEducators = async () => {
     try {
+      // Only authenticated admin users can access full educator data including contact info
       const { data, error } = await supabase
         .from('educators')
         .select('*')
@@ -55,9 +56,10 @@ export const EducatorManager = () => {
       if (error) throw error;
       setEducators(data || []);
     } catch (error) {
+      console.error('Error fetching educators:', error);
       toast({
         title: "Errore",
-        description: "Impossibile caricare gli educatori",
+        description: "Impossibile caricare gli educatori. Verifica di essere autenticato come amministratore.",
         variant: "destructive"
       });
     } finally {
