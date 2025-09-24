@@ -38,7 +38,7 @@ const bookingSchema = z.object({
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 const RATE_LIMIT = {
-  maxRequests: 3,
+  maxRequests: 5,  // Increased to 5 requests per window for better UX
   windowMs: 15 * 60 * 1000, // 15 minutes
 };
 
@@ -267,15 +267,21 @@ const handler = async (req: Request): Promise<Response> => {
                      req.headers.get('x-real-ip') || 
                      'unknown';
 
-    // Check rate limiting
+    // Enhanced rate limiting with better error message
     if (!checkRateLimit(clientIP)) {
+      console.log(`Rate limit exceeded for IP: ${clientIP}`);
       return new Response(
         JSON.stringify({ 
-          error: 'Troppi tentativi. Riprova tra 15 minuti.' 
+          error: 'Troppi tentativi di invio. Per motivi di sicurezza, puoi inviare massimo 5 richieste ogni 15 minuti. Riprova più tardi.',
+          retryAfter: 15 * 60 // seconds until reset
         }),
         { 
           status: 429, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': '900' // 15 minutes in seconds
+          } 
         }
       );
     }

@@ -208,12 +208,66 @@ npm run build
 npm run test:a11y
 ```
 
-## Deploy
+## Deploy in Produzione
 
-L'applicazione è configurata per il deploy automatico su Lovable con:
-- Build automatico del frontend
-- Deploy automatico delle Edge Functions
-- Configurazione automatica del database Supabase
+### 🚀 Deploy Rapido con Lovable (Raccomandato)
+Il modo più semplice per deployare l'applicazione:
+
+1. **Deploy Automatico**: Lovable gestisce automaticamente build, hosting e database
+2. **Configurazione Secrets**: Aggiungi le chiavi API nei Supabase Secrets
+3. **Popolazione Database**: Esegui lo script di seed dal SQL Editor
+4. **Verifica Health**: Controlla `/api/health` per confermare il funzionamento
+
+### 📊 Endpoints di Sistema
+
+- **Health Check**: `GET /api/health` - Stato sistema e monitoraggio
+- **Booking**: `POST /api/bookings` - Rate limited a 5 richieste/15min per IP
+- **Materials**: Download materiali con tracking automatico
+
+### 🛡️ Sicurezza e Rate Limiting
+
+- **Rate Limiting**: 5 richieste ogni 15 minuti per IP sui form di booking
+- **Anti-Bot Protection**: Honeypot, timestamp validation, IP tracking
+- **Input Validation**: Schema Zod completo client e server-side
+- **RLS Policies**: Protezione dati con Row Level Security
+
+### 📋 Script di Popolazione Produzione
+
+Esegui `scripts/seed-production.sql` nel SQL Editor di Supabase per popolare:
+- ✅ 4 workshop didattici realistici
+- ✅ 3 educatori esperti con specializzazioni
+- ✅ 3 storie di successo dettagliate  
+- ✅ 6 materiali didattici (gratuiti e premium)
+- ✅ 5 codici di accesso per materiali premium
+- ✅ Dati di esempio per testing
+
+### 🔧 Deploy Self-Hosted
+
+Per deploy personalizzato consulta la **[Guida Deploy Completa](scripts/deploy-guide.md)** che include:
+- Setup Supabase da zero
+- Configurazione dominio personalizzato
+- Monitoraggio e alerting
+- Backup e disaster recovery
+- Troubleshooting avanzato
+
+## Health Check e Monitoraggio
+
+```bash
+# Verifica stato sistema
+curl https://[project-id].supabase.co/functions/v1/health
+
+# Risposta esempio:
+{
+  "status": "healthy",
+  "timestamp": "2024-09-24T12:00:00.000Z", 
+  "checks": {
+    "database": { "status": "up", "responseTime": 45 },
+    "email": { "status": "configured", "service": "resend" },
+    "storage": { "status": "up" }
+  },
+  "uptime": 3600
+}
+```
 
 ---
 
