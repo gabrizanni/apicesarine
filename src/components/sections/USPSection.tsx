@@ -21,7 +21,7 @@ const USPSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-background">
+    <section className="py-16 bg-gradient-to-br from-honey/10 via-cream/50 to-forest/5 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-slate mb-4">
@@ -41,7 +41,7 @@ const USPSection = () => {
                 key={index} 
                 className="text-center group hover:-translate-y-2 transition-smooth"
               >
-                <div className="mb-6 inline-flex p-4 bg-gradient-honey rounded-2xl shadow-soft group-hover:shadow-honey transition-smooth">
+                <div className="mb-6 inline-flex p-4 bg-gradient-honey rounded-2xl shadow-honey group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
                   <Icon className="h-8 w-8 text-slate" />
                 </div>
                 <h3 className="text-xl font-semibold text-slate mb-3">

@@ -6,7 +6,7 @@ import heroImage from '@/assets/hero-classroom.jpg';
 
 const Hero = () => {
   return (
-    <section className="relative bg-gradient-hero overflow-hidden">
+    <section className="relative bg-gradient-to-br from-honey/20 via-cream to-forest/10 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
@@ -23,14 +23,14 @@ const Hero = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild variant="hero" size="xl">
+              <Button asChild variant="hero" size="xl" className="shadow-honey hover:shadow-xl">
                 <Link to="/prenota" className="group">
                   Richiedi un laboratorio
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-smooth" />
                 </Link>
               </Button>
               
-              <Button asChild variant="outline" size="xl" className="border-slate/20">
+              <Button asChild variant="outline" size="xl" className="border-forest/30 bg-white/80 backdrop-blur-sm hover:bg-forest hover:text-white shadow-lg">
                 <Link to="/galleria" className="group">
                   <Play className="mr-2 h-5 w-5" />
                   Guarda i video

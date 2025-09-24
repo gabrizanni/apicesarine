@@ -24,7 +24,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-16 bg-muted/30">
+    <section className="py-16 bg-gradient-to-br from-forest/5 via-background to-honey/10 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-slate mb-4">
@@ -45,8 +45,8 @@ const HowItWorks = () => {
               <div key={index} className="relative text-center group">
                 {/* Step number */}
                 <div className="mb-6 relative">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-background rounded-full shadow-card border-4 border-cream group-hover:border-honey transition-smooth relative z-10">
-                    <Icon className="h-6 w-6 text-forest" />
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-honey rounded-full shadow-honey border-4 border-white group-hover:border-forest group-hover:scale-110 transition-all duration-300 relative z-10">
+                    <Icon className="h-6 w-6 text-white" />
                   </div>
                   <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-honey rounded-full flex items-center justify-center text-xs font-bold text-slate">
                     {step.number}

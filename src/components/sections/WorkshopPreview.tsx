@@ -39,7 +39,7 @@ const WorkshopPreview = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-background via-muted/20 to-honey/5 relative overflow-hidden">
+    <section className="py-16 bg-gradient-to-br from-cream/80 via-honey/10 to-forest/10 relative overflow-hidden">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-3">
         <svg className="w-full h-full" viewBox="0 0 100 100" fill="none">
@@ -64,7 +64,7 @@ const WorkshopPreview = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {workshops.map((workshop, index) => (
-            <Card key={index} className="shadow-card hover:shadow-lg transition-smooth border-0 overflow-hidden group hover:-translate-y-1">
+            <Card key={index} className="shadow-honey hover:shadow-xl transition-all duration-300 border-0 overflow-hidden group hover:-translate-y-2 bg-white/80 backdrop-blur-sm">
               <div className={`h-2 ${
                 workshop.color === 'honey' ? 'bg-gradient-honey' :
                 workshop.color === 'forest' ? 'bg-gradient-nature' :
