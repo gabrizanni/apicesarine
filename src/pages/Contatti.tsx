@@ -226,8 +226,8 @@ const Contatti = () => {
               Visita la nostra sezione FAQ per trovare risposte immediate 
               alle domande più comuni sui nostri laboratori.
             </p>
-            <Button variant="nature" size="lg">
-              Vai alle FAQ
+            <Button variant="nature" size="lg" asChild>
+              <a href="/faq">Vai alle FAQ</a>
             </Button>
           </div>
         </div>

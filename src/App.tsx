@@ -12,6 +12,7 @@ import ChiSiamo from "./pages/ChiSiamo";
 import Storie from "./pages/Storie";
 import Galleria from "./pages/Galleria";
 import Contatti from "./pages/Contatti";
+import FAQ from "./pages/FAQ";
 import Glossario from "./pages/Glossario";
 import Admin from "./pages/Admin";
 import BookingSuccess from "./pages/BookingSuccess";
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/storie" element={<Storie />} />
           <Route path="/galleria" element={<Galleria />} />
           <Route path="/contatti" element={<Contatti />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/glossario" element={<Glossario />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
