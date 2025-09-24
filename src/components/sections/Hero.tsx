@@ -10,7 +10,7 @@ const Hero = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
-          <div className="space-y-8">
+          <div className="relative z-10 space-y-8">
             <div className="space-y-4">
               <h1 className="text-4xl lg:text-6xl font-bold text-slate leading-tight">
                 Portiamo le api
@@ -85,14 +85,14 @@ const Hero = () => {
             </div>
             
             {/* Decorative elements */}
-            <div className="absolute -top-4 -right-4 w-24 h-24 bg-honey/20 rounded-full blur-xl"></div>
-            <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-forest/10 rounded-full blur-xl"></div>
+            <div className="pointer-events-none absolute -top-4 -right-4 w-24 h-24 bg-honey/20 rounded-full blur-xl"></div>
+            <div className="pointer-events-none absolute -bottom-8 -left-8 w-32 h-32 bg-forest/10 rounded-full blur-xl"></div>
           </div>
         </div>
       </div>
 
       {/* Background pattern */}
-      <div className="absolute inset-0 opacity-5">
+      <div className="pointer-events-none absolute inset-0 opacity-5 -z-10">
         <svg className="w-full h-full" viewBox="0 0 100 100" fill="none">
           <defs>
             <pattern id="hexagon" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
