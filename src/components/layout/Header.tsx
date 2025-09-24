@@ -48,10 +48,10 @@ const Header = () => {
                 key={item.name}
                 to={item.href}
                 className={cn(
-                  "text-sm font-medium transition-smooth hover:text-primary focus-ring rounded-sm px-2 py-1",
+                  "text-sm font-medium transition-smooth hover:text-primary focus-ring rounded-lg px-3 py-2",
                   isActive(item.href) 
-                    ? "text-primary border-b-2 border-primary" 
-                    : "text-muted-foreground"
+                    ? "text-primary bg-accent border border-accent-foreground/20 shadow-sm" 
+                    : "text-muted-foreground hover:bg-accent/50"
                 )}
                 aria-current={isActive(item.href) ? "page" : undefined}
               >
