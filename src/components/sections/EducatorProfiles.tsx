@@ -25,12 +25,9 @@ export const EducatorProfiles = () => {
 
   const fetchPublicEducators = async () => {
     try {
-      // Only fetch non-sensitive educator information
+      // Use the secure function to get only safe educator information
       const { data, error } = await supabase
-        .from('educators')
-        .select('id, name, bio, specialization, avatar_url, is_active')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+        .rpc('get_public_educator_profiles');
 
       if (error) throw error;
       setEducators(data || []);

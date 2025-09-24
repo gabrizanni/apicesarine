@@ -237,6 +237,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_public_educator_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          avatar_url: string
+          bio: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          specialization: string
+          updated_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
