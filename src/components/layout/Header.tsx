@@ -23,9 +23,15 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-soft">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <>
+      {/* Skip to main content link */}
+      <a href="#main-content" className="skip-link">
+        Salta al contenuto principale
+      </a>
+      
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-soft" role="banner">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <div className="p-2 bg-gradient-honey rounded-xl group-hover:scale-105 transition-smooth">
@@ -35,17 +41,18 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
+          <nav className="hidden lg:flex items-center space-x-8" role="navigation" aria-label="Menu principale">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
                 className={cn(
-                  "text-sm font-medium transition-smooth hover:text-primary",
+                  "text-sm font-medium transition-smooth hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm px-2 py-1",
                   isActive(item.href) 
                     ? "text-primary border-b-2 border-primary" 
                     : "text-muted-foreground"
                 )}
+                aria-current={isActive(item.href) ? "page" : undefined}
               >
                 {item.name}
               </Link>
@@ -65,7 +72,10 @@ const Header = () => {
               variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle menu"
+              aria-label={isMenuOpen ? "Chiudi menu" : "Apri menu"}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
+              aria-haspopup="true"
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -74,19 +84,20 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="lg:hidden bg-background border-t border-border">
+          <div className="lg:hidden bg-background border-t border-border" id="mobile-menu" role="navigation" aria-label="Menu mobile">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    "block px-3 py-2 rounded-xl text-base font-medium transition-smooth",
+                    "block px-3 py-2 rounded-xl text-base font-medium transition-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     isActive(item.href)
                       ? "bg-accent text-primary"
                       : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   )}
                   onClick={() => setIsMenuOpen(false)}
+                  aria-current={isActive(item.href) ? "page" : undefined}
                 >
                   {item.name}
                 </Link>
@@ -103,6 +114,7 @@ const Header = () => {
         )}
       </div>
     </header>
+    </>
   );
 };
 

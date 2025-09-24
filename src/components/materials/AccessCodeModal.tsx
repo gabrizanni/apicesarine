@@ -73,13 +73,13 @@ const AccessCodeModal = ({ isOpen, onClose, onSuccess, validateCode }: AccessCod
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" role="dialog" aria-labelledby="modal-title" aria-describedby="modal-description">
         <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            <Lock className="h-5 w-5 text-forest" />
+          <DialogTitle id="modal-title" className="flex items-center space-x-2">
+            <Lock className="h-5 w-5 text-forest" aria-hidden="true" />
             <span>Accesso area riservata</span>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription id="modal-description">
             Inserisci il codice di accesso ricevuto dopo aver partecipato ai nostri laboratori
           </DialogDescription>
         </DialogHeader>
@@ -96,12 +96,18 @@ const AccessCodeModal = ({ isOpen, onClose, onSuccess, validateCode }: AccessCod
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
                 className="pr-10"
                 maxLength={20}
+                aria-required="true"
+                aria-invalid={isValid === false}
+                aria-describedby={isValid === false ? "code-error" : undefined}
               />
               {isValid === true && (
-                <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
+                <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" aria-label="Codice valido" />
               )}
               {isValid === false && (
-                <XCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-red-500" />
+                <XCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-red-500" aria-label="Codice non valido" />
+              )}
+              {isValid === false && (
+                <div id="code-error" className="sr-only">Il codice inserito non è valido</div>
               )}
             </div>
           </div>

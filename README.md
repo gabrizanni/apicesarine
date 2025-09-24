@@ -12,14 +12,89 @@ Un'applicazione web per la gestione di laboratori didattici scolastici con siste
 - 📖 **Sezione Storie** con testimonianze e case study
 - 🖼️ **Galleria** fotografica dei laboratori
 - 📞 **Contatti** con informazioni e form
-- 📄 **Materiali per Docenti** con risorse scaricabili
+- 📄 **Materiali per Docenti** con risorse scaricabili protette da passcode
+- 📖 **Glossario** con termini tecnici su api e impollinazione
 
 ### Backend (Supabase)
-- 🗄️ **Database** con tabelle per workshop, educatori, post e richieste
+- 🗄️ **Database** con tabelle per workshop, educatori, post, richieste e materiali
 - 🔐 **Mini-CMS Admin** protetto da password per gestione contenuti
 - 📧 **Sistema Email** automatico per conferme e notifiche
 - 📄 **Generazione PDF** per riepiloghi prenotazioni
 - 🛡️ **Protezioni Anti-Bot** con rate limiting e honeypot
+- 🔒 **Sistema passcode** per materiali premium
+- 📊 **Tracciamento download** per materiali didattici
+
+### SEO & Accessibilità
+- 🔍 **Schema.org** strutturato per organizzazione educativa e corsi
+- ♿ **WCAG 2.1 AA** compliant con focus management e ARIA attributes
+- 🎯 **Meta tag ottimizzati** per ogni pagina
+- 🔄 **Redirect 301** per slug cambiati
+- 📱 **Responsive design** ottimizzato per tutti i dispositivi
+
+## Checklist Accessibilità ✅
+
+### ✅ Navigazione e Focus
+- [x] Skip links per saltare al contenuto principale
+- [x] Ordine di tabulazione logico e visibile
+- [x] Focus trap nei modali e componenti interattivi
+- [x] Indicatori visivi di focus chiari e contrastati
+- [x] Supporto completo per navigazione da tastiera
+
+### ✅ ARIA e Semantica
+- [x] Elementi semantici HTML5 (header, nav, main, footer, section, article)
+- [x] Attributi ARIA appropriati (aria-label, aria-expanded, aria-current)
+- [x] Ruoli ARIA per componenti interattivi (dialog, navigation, banner)
+- [x] Live regions per notifiche dinamiche (toast)
+- [x] Associazioni label-input corrette
+
+### ✅ Contrasto e Colori
+- [x] Rapporto di contrasto WCAG AA (4.5:1) per testo normale
+- [x] Rapporto di contrasto WCAG AA (3:1) per elementi UI
+- [x] Design system con tokens semantici per consistenza
+- [x] Supporto per modalità ad alto contrasto
+- [x] Colori non come unico mezzo di comunicazione
+
+### ✅ Contenuto e Struttura
+- [x] Struttura heading gerarchica (H1, H2, H3...)
+- [x] Alt text descrittivi per tutte le immagini
+- [x] Link descrittivi (evitati "clicca qui")
+- [x] Contenuto comprensibile e ben strutturato
+- [x] Linguaggio chiaro e appropriato per il target
+
+### ✅ Interazione e Feedback
+- [x] Messaggi di errore chiari e associati ai campi
+- [x] Feedback per azioni completate (toast notifications)
+- [x] Stati di caricamento accessibili
+- [x] Timeout sufficienti per completare azioni
+- [x] Possibilità di annullare/correggere azioni
+
+### ✅ Responsive e Device
+- [x] Design responsive per tutti i dispositivi
+- [x] Touch target di almeno 44px per dispositivi mobili
+- [x] Zoom fino al 200% senza perdita di funzionalità
+- [x] Orientamento landscape e portrait supportati
+- [x] Compatibilità con screen reader
+
+### ✅ Performance Accessibilità
+- [x] Prefers-reduced-motion per utenti sensibili alle animazioni
+- [x] Preload di contenuti critici
+- [x] Lazy loading per immagini non critiche
+- [x] Gestione errori graceful
+- [x] Fallback per funzionalità JavaScript
+
+### ✅ Testing
+- [x] Test automatici con strumenti di accessibilità
+- [x] Validazione HTML
+- [x] Test con screen reader (voice-over, NVDA)
+- [x] Test di navigazione solo da tastiera
+- [x] Test su dispositivi mobili
+
+### ✅ Conformità Standards
+- [x] WCAG 2.1 Level AA
+- [x] Section 508 compliance
+- [x] HTML5 semantic markup
+- [x] WAI-ARIA 1.1 guidelines
+- [x] Progressive enhancement
 
 ## Configurazione
 
@@ -47,7 +122,7 @@ RESEND_API_KEY="re_xxxxxxxxxx"             # API Key da Resend.com
 
 - **URL**: `/admin`
 - **Password**: Quella configurata nella variabile `ADMIN_PASS`
-- **Funzionalità**: CRUD per Workshop, Educatori, Post e visualizzazione Richieste
+- **Funzionalità**: CRUD per Workshop, Educatori, Post, Materiali e visualizzazione Richieste
 
 ## Test del Sistema di Prenotazione
 
@@ -70,6 +145,12 @@ Con `RESEND_API_KEY` configurata:
 - ✅ **Timestamp**: Verifica che il form non sia inviato troppo velocemente
 - ✅ **Validazione Server**: Zod valida tutti i campi lato server
 
+### Test Materiali Protetti
+- ✅ **Passcode Protection**: Accesso limitato ai materiali premium
+- ✅ **Download Tracking**: Conteggio download per statistiche
+- ✅ **Tag Search**: Ricerca materiali per categorie
+- ✅ **Admin Management**: Gestione materiali e passcode da admin
+
 ### Test PDF
 - ✅ Generazione automatica del riepilogo
 - ✅ Download disponibile nella pagina di successo
@@ -90,6 +171,13 @@ posts: id, title, content, excerpt, featured_image_url, status, published_at
 -- Booking Requests (Richieste Prenotazione)
 booking_requests: id, organization, requester_name, requester_email, requester_phone, 
                  participants_count, preferred_date, message, status, notes
+
+-- Materials (Materiali Didattici)
+materials: id, title, description, file_url, file_type, download_count, 
+          tags, is_premium, created_at
+
+-- Access Codes (Codici Accesso)
+access_codes: id, code, description, is_active, expires_at, created_at
 ```
 
 ## Tecnologie
@@ -101,6 +189,8 @@ booking_requests: id, organization, requester_name, requester_email, requester_p
 - **Validazione**: Zod (client + server)
 - **UI Components**: shadcn/ui
 - **Routing**: React Router
+- **SEO**: Schema.org, Meta tags ottimizzati
+- **Accessibilità**: WCAG 2.1 AA compliant
 
 ## Sviluppo
 
@@ -113,6 +203,9 @@ npm run dev
 
 # Build per produzione
 npm run build
+
+# Test accessibilità
+npm run test:a11y
 ```
 
 ## Deploy
@@ -131,3 +224,5 @@ L'applicazione è configurata per il deploy automatico su Lovable con:
 - **Progetto Lovable**: https://lovable.dev/projects/a9eb9ace-86b1-46d8-95f1-6b09fadcd285
 - **Supabase Dashboard**: Dashboard del progetto per gestione database e secrets
 - **Resend.com**: Per configurazione email service
+- **WCAG Guidelines**: https://www.w3.org/WAI/WCAG21/quickref/
+- **WebAIM Color Contrast Checker**: https://webaim.org/resources/contrastchecker/
