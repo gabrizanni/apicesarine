@@ -92,7 +92,7 @@ const Hero = () => {
       </div>
 
       {/* Background pattern */}
-      <div className="pointer-events-none absolute inset-0 opacity-5 -z-10">
+      <div className="pointer-events-none absolute inset-0 opacity-5">
         <svg className="w-full h-full" viewBox="0 0 100 100" fill="none">
           <defs>
             <pattern id="hexagon" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
