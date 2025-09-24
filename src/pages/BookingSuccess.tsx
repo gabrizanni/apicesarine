@@ -5,6 +5,7 @@ import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/custom-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { downloadICSFile } from '@/utils/icsGenerator';
 
 const BookingSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -28,6 +29,21 @@ const BookingSuccess = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    }
+  };
+
+  const handleDownloadICS = () => {
+    const date1 = searchParams.get('date1');
+    if (date1 && program && schoolName && contactName && email) {
+      downloadICSFile({
+        workshopTitle: program,
+        organization: schoolName,
+        date: new Date(date1),
+        duration: 120, // 2 hours default
+        requesterName: contactName,
+        requesterEmail: email,
+        description: `Laboratorio di apicoltura educativa per ${students} studenti`
+      });
     }
   };
 
@@ -182,6 +198,17 @@ const BookingSuccess = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+            {searchParams.get('date1') && (
+              <Button 
+                onClick={handleDownloadICS}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Calendar className="h-4 w-4" />
+                Scarica Evento Calendario (.ics)
+              </Button>
+            )}
+            
             {pdfDownload && (
               <Button 
                 onClick={handleDownloadPDF}

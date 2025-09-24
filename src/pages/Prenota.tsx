@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Users, GraduationCap, AlertTriangle } from 'lucide-react';
+import { Calendar, MapPin, Users, GraduationCap, AlertTriangle, Download } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/custom-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +14,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useEducatorAvailability } from '@/hooks/useEducatorAvailability';
+import { DateSuggestions } from '@/components/booking/DateSuggestions';
+import { downloadICSFile } from '@/utils/icsGenerator';
+import { format } from 'date-fns';
 
 const bookingSchema = z.object({
   schoolType: z.string().min(1, "Seleziona il tipo di istituto"),
@@ -45,8 +49,12 @@ const Prenota = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [formTimestamp, setFormTimestamp] = useState<number>();
+  const [selectedProvince, setSelectedProvince] = useState<string>();
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  // Get educator availability based on selected province
+  const { availableEducators, suggestedDates, loading: availabilityLoading } = useEducatorAvailability(selectedProvince);
 
   useEffect(() => {
     // Set timestamp when component mounts for anti-bot protection
@@ -224,19 +232,26 @@ const Prenota = () => {
                       )}
                     />
 
-                    <FormField
-                      control={form.control}
-                      name="province"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Provincia *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Es. BO" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                     <FormField
+                       control={form.control}
+                       name="province"
+                       render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>Provincia *</FormLabel>
+                           <FormControl>
+                             <Input 
+                               placeholder="Es. Bologna" 
+                               {...field} 
+                               onChange={(e) => {
+                                 field.onChange(e);
+                                 setSelectedProvince(e.target.value);
+                               }}
+                             />
+                           </FormControl>
+                           <FormMessage />
+                         </FormItem>
+                       )}
+                     />
 
                     <FormField
                       control={form.control}
@@ -362,6 +377,28 @@ const Prenota = () => {
                       )}
                     />
                   </div>
+
+                  {/* Date Suggestions */}
+                  {selectedProvince && (
+                    <div className="mb-6">
+                      <DateSuggestions
+                        suggestedDates={suggestedDates}
+                        availableEducators={availableEducators}
+                        onDateSelect={(date) => {
+                          const formattedDate = format(date, 'yyyy-MM-dd');
+                          if (!form.getValues('datePreference1')) {
+                            form.setValue('datePreference1', formattedDate);
+                          } else if (!form.getValues('datePreference2')) {
+                            form.setValue('datePreference2', formattedDate);
+                          } else if (!form.getValues('datePreference3')) {
+                            form.setValue('datePreference3', formattedDate);
+                          }
+                        }}
+                        selectedProvince={selectedProvince}
+                        loading={availabilityLoading}
+                      />
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <FormField

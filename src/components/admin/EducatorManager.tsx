@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,6 +21,9 @@ interface Educator {
   phone: string | null;
   avatar_url: string | null;
   is_active: boolean;
+  available_days: string[];
+  available_regions: string[];
+  availability_notes: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -38,7 +42,10 @@ export const EducatorManager = () => {
     email: '',
     phone: '',
     avatar_url: '',
-    is_active: true
+    is_active: true,
+    available_days: [] as string[],
+    available_regions: [] as string[],
+    availability_notes: ''
   });
 
   useEffect(() => {
@@ -54,7 +61,19 @@ export const EducatorManager = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setEducators(data || []);
+      
+      // Transform JSONB arrays to string arrays with proper type handling
+      const transformedData = (data || []).map(educator => ({
+        ...educator,
+        available_days: Array.isArray(educator.available_days) 
+          ? educator.available_days.map(day => String(day)) 
+          : [],
+        available_regions: Array.isArray(educator.available_regions) 
+          ? educator.available_regions.map(region => String(region)) 
+          : []
+      }));
+      
+      setEducators(transformedData);
     } catch (error) {
       console.error('Error fetching educators:', error);
       toast({
@@ -75,7 +94,10 @@ export const EducatorManager = () => {
       email: '',
       phone: '',
       avatar_url: '',
-      is_active: true
+      is_active: true,
+      available_days: [],
+      available_regions: [],
+      availability_notes: ''
     });
     setEditingEducator(null);
   };
@@ -138,7 +160,10 @@ export const EducatorManager = () => {
       email: educator.email || '',
       phone: educator.phone || '',
       avatar_url: educator.avatar_url || '',
-      is_active: educator.is_active
+      is_active: educator.is_active,
+      available_days: educator.available_days || [],
+      available_regions: educator.available_regions || [],
+      availability_notes: educator.availability_notes || ''
     });
     setIsDialogOpen(true);
   };
@@ -246,6 +271,83 @@ export const EducatorManager = () => {
                   value={formData.avatar_url}
                   onChange={(e) => setFormData({ ...formData, avatar_url: e.target.value })}
                 />
+              </div>
+
+              {/* Availability Section */}
+              <div className="space-y-4 border-t pt-4">
+                <h4 className="font-medium text-sm text-slate">Disponibilità</h4>
+                
+                <div className="space-y-2">
+                  <Label>Giorni disponibili</Label>
+                  <div className="grid grid-cols-7 gap-2">
+                    {['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'].map((day) => (
+                      <div key={day} className="flex items-center space-x-1">
+                        <Checkbox
+                          id={day}
+                          checked={formData.available_days.includes(day)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setFormData({
+                                ...formData,
+                                available_days: [...formData.available_days, day]
+                              });
+                            } else {
+                              setFormData({
+                                ...formData,
+                                available_days: formData.available_days.filter(d => d !== day)
+                              });
+                            }
+                          }}
+                        />
+                        <Label htmlFor={day} className="text-xs">{day.slice(0, 3)}</Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Regioni coperte</Label>
+                  <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
+                    {[
+                      'Lombardia', 'Piemonte', 'Veneto', 'Emilia-Romagna', 'Toscana', 'Lazio',
+                      'Campania', 'Puglia', 'Sicilia', 'Calabria', 'Sardegna', 'Liguria',
+                      'Marche', 'Umbria', 'Abruzzo', 'Molise', 'Basilicata', 'Friuli-Venezia Giulia',
+                      'Trentino-Alto Adige', 'Valle d\'Aosta'
+                    ].map((region) => (
+                      <div key={region} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={region}
+                          checked={formData.available_regions.includes(region)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setFormData({
+                                ...formData,
+                                available_regions: [...formData.available_regions, region]
+                              });
+                            } else {
+                              setFormData({
+                                ...formData,
+                                available_regions: formData.available_regions.filter(r => r !== region)
+                              });
+                            }
+                          }}
+                        />
+                        <Label htmlFor={region} className="text-sm">{region}</Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="availability_notes">Note disponibilità</Label>
+                  <Textarea
+                    id="availability_notes"
+                    value={formData.availability_notes}
+                    onChange={(e) => setFormData({ ...formData, availability_notes: e.target.value })}
+                    placeholder="Es: Disponibile solo la mattina, preferenza per scuole primarie..."
+                    rows={2}
+                  />
+                </div>
               </div>
 
               <div className="flex items-center space-x-2">

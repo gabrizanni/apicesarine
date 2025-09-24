@@ -72,6 +72,9 @@ export type Database = {
       }
       educators: {
         Row: {
+          availability_notes: string | null
+          available_days: Json | null
+          available_regions: Json | null
           avatar_url: string | null
           bio: string | null
           created_at: string
@@ -84,6 +87,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          availability_notes?: string | null
+          available_days?: Json | null
+          available_regions?: Json | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
@@ -96,6 +102,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          availability_notes?: string | null
+          available_days?: Json | null
+          available_regions?: Json | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
@@ -240,6 +249,8 @@ export type Database = {
       get_public_educator_profiles: {
         Args: Record<PropertyKey, never>
         Returns: {
+          available_days: Json
+          available_regions: Json
           avatar_url: string
           bio: string
           created_at: string
