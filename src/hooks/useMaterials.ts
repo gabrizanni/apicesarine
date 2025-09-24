@@ -1,0 +1,124 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+
+export interface Material {
+  id: string;
+  title: string;
+  description: string | null;
+  file_url: string | null;
+  file_type: string;
+  file_size: string | null;
+  tags: string[];
+  target_age_group: string | null;
+  download_count: number;
+  is_premium: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export const useMaterials = () => {
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTag, setSearchTag] = useState('');
+  const { toast } = useToast();
+
+  const fetchMaterials = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('materials')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      // Transform the data to ensure tags is an array
+      const transformedData: Material[] = (data || []).map(item => ({
+        ...item,
+        tags: Array.isArray(item.tags) ? item.tags : JSON.parse(item.tags as string) || []
+      }));
+      
+      setMaterials(transformedData);
+    } catch (error) {
+      console.error('Error fetching materials:', error);
+      toast({
+        title: "Errore",
+        description: "Impossibile caricare i materiali",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const downloadMaterial = async (materialId: string) => {
+    try {
+      const { error } = await supabase.rpc('increment_download_count', {
+        material_id: materialId
+      });
+
+      if (error) throw error;
+
+      // Update local state
+      setMaterials(prev => 
+        prev.map(material => 
+          material.id === materialId 
+            ? { ...material, download_count: material.download_count + 1 }
+            : material
+        )
+      );
+
+      toast({
+        title: "Download avviato",
+        description: "Il file è stato scaricato con successo",
+      });
+    } catch (error) {
+      console.error('Error tracking download:', error);
+      toast({
+        title: "Errore",
+        description: "Errore durante il download",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const validateAccessCode = async (code: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.rpc('validate_access_code', {
+        input_code: code
+      });
+
+      if (error) throw error;
+      return data === true;
+    } catch (error) {
+      console.error('Error validating access code:', error);
+      return false;
+    }
+  };
+
+  const filteredMaterials = materials.filter(material => {
+    if (!searchTag) return true;
+    return material.tags.some(tag => 
+      tag.toLowerCase().includes(searchTag.toLowerCase())
+    );
+  });
+
+  const freeMaterials = filteredMaterials.filter(m => !m.is_premium);
+  const premiumMaterials = filteredMaterials.filter(m => m.is_premium);
+
+  useEffect(() => {
+    fetchMaterials();
+  }, []);
+
+  return {
+    materials: filteredMaterials,
+    freeMaterials,
+    premiumMaterials,
+    loading,
+    searchTag,
+    setSearchTag,
+    downloadMaterial,
+    validateAccessCode,
+    refetch: fetchMaterials
+  };
+};

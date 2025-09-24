@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogOut, Users, BookOpen, FileText, Calendar } from 'lucide-react';
+import { LogOut, Users, BookOpen, FileText, Calendar, Archive } from 'lucide-react';
 import { WorkshopManager } from './WorkshopManager';
 import { EducatorManager } from './EducatorManager';
 import { PostManager } from './PostManager';
 import { BookingRequestViewer } from './BookingRequestViewer';
+import MaterialManager from './MaterialManager';
 
 interface AdminLayoutProps {
   onLogout: () => void;
@@ -29,7 +30,7 @@ export const AdminLayout = ({ onLogout }: AdminLayoutProps) => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="workshops" className="flex items-center gap-2">
               <BookOpen className="h-4 w-4" />
               Workshop
@@ -41,6 +42,10 @@ export const AdminLayout = ({ onLogout }: AdminLayoutProps) => {
             <TabsTrigger value="posts" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Post
+            </TabsTrigger>
+            <TabsTrigger value="materials" className="flex items-center gap-2">
+              <Archive className="h-4 w-4" />
+              Materiali
             </TabsTrigger>
             <TabsTrigger value="bookings" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
@@ -77,6 +82,17 @@ export const AdminLayout = ({ onLogout }: AdminLayoutProps) => {
               </CardHeader>
               <CardContent>
                 <PostManager />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="materials">
+            <Card>
+              <CardHeader>
+                <CardTitle>Gestione Materiali</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <MaterialManager />
               </CardContent>
             </Card>
           </TabsContent>

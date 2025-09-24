@@ -1,68 +1,66 @@
-import React from 'react';
-import { Download, Lock, FileText, Video, BookOpen } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Lock, Plus } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/custom-button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { useMaterials } from '@/hooks/useMaterials';
+import MaterialCard from '@/components/materials/MaterialCard';
+import AccessCodeModal from '@/components/materials/AccessCodeModal';
 
 const MaterialiDocenti = () => {
-  const freeMaterials = [
-    {
-      title: "Guida alle Api per la Scuola dell'Infanzia",
-      description: "Manuale completo con attività e suggerimenti per introdurre i più piccoli al mondo delle api",
-      type: "PDF",
-      size: "2.3 MB",
-      icon: FileText
-    },
-    {
-      title: "Schede Didattiche: Il Ciclo di Vita delle Api",
-      description: "Materiali stampabili con illustrazioni e attività per la scuola primaria",
-      type: "PDF",
-      size: "1.8 MB",
-      icon: FileText
-    },
-    {
-      title: "Video Tutorial: Costruire un Hotel per Insetti",
-      description: "Guida video passo-passo per creare rifugi per impollinatori selvatici",
-      type: "Video",
-      size: "15 min",
-      icon: Video
-    },
-    {
-      title: "Glossario Illustrato dell'Apicoltura",
-      description: "Dizionario visivo dei termini tecnici adatto a tutte le età",
-      type: "PDF",
-      size: "3.1 MB",
-      icon: BookOpen
-    }
-  ];
+  const { 
+    freeMaterials, 
+    premiumMaterials, 
+    loading, 
+    searchTag, 
+    setSearchTag, 
+    downloadMaterial, 
+    validateAccessCode 
+  } = useMaterials();
+  
+  const [hasAccess, setHasAccess] = useState(false);
+  const [showAccessModal, setShowAccessModal] = useState(false);
+  const [accessCode, setAccessCode] = useState('');
 
-  const premiumMaterials = [
-    {
-      title: "Percorso Didattico Completo: Un Anno con le Api",
-      description: "Programmazione annuale con 20 lezioni strutturate e materiali di supporto",
-      type: "Pacchetto",
-      lessons: "20 lezioni"
-    },
-    {
-      title: "Assessment e Verifiche per Competenze",
-      description: "Strumenti di valutazione allineati alle Indicazioni Nazionali",
-      type: "PDF + Doc",
-      lessons: "15 verifiche"
-    },
-    {
-      title: "Laboratori Virtuali Interattivi",
-      description: "Simulazioni digitali per esplorare l'alveare in sicurezza",
-      type: "Software",
-      lessons: "5 simulazioni"
-    },
-    {
-      title: "Formazione Docenti: Webinar Registrati",
-      description: "Serie di incontri formativi con esperti e buone pratiche",
-      type: "Video",
-      lessons: "8 webinar"
+  const handleAccessSuccess = (code: string) => {
+    setHasAccess(true);
+    setAccessCode(code);
+    // Store access in sessionStorage for this session
+    sessionStorage.setItem('materials_access', 'true');
+    sessionStorage.setItem('materials_code', code);
+  };
+
+  // Check for existing access on load
+  React.useEffect(() => {
+    const storedAccess = sessionStorage.getItem('materials_access');
+    const storedCode = sessionStorage.getItem('materials_code');
+    if (storedAccess === 'true' && storedCode) {
+      setHasAccess(true);
+      setAccessCode(storedCode);
     }
-  ];
+  }, []);
+
+  const allTags = React.useMemo(() => {
+    const tags = new Set<string>();
+    [...freeMaterials, ...premiumMaterials].forEach(material => {
+      material.tags.forEach(tag => tags.add(tag));
+    });
+    return Array.from(tags).sort();
+  }, [freeMaterials, premiumMaterials]);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forest mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Caricamento materiali...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -81,6 +79,49 @@ const MaterialiDocenti = () => {
         </div>
       </section>
 
+      {/* Search and Filters */}
+      <section className="py-8 bg-background border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row gap-4 items-center">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Cerca per tag..."
+                value={searchTag}
+                onChange={(e) => setSearchTag(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            {/* Popular Tags */}
+            <div className="flex flex-wrap gap-2">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">Tag popolari:</span>
+              {allTags.slice(0, 4).map((tag) => (
+                <Button
+                  key={tag}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchTag(tag)}
+                  className="text-xs h-7"
+                >
+                  {tag}
+                </Button>
+              ))}
+              {searchTag && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSearchTag('')}
+                  className="text-xs h-7"
+                >
+                  Cancella
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Free Materials */}
       <section className="py-16 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -93,47 +134,23 @@ const MaterialiDocenti = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {freeMaterials.map((material, index) => {
-              const Icon = material.icon;
-              return (
-                <Card key={index} className="shadow-card border-0 hover:shadow-lg transition-smooth group">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start space-x-4">
-                      <div className="p-3 bg-gradient-honey rounded-xl group-hover:shadow-honey transition-smooth">
-                        <Icon className="h-6 w-6 text-slate" />
-                      </div>
-                      <div className="flex-1">
-                        <CardTitle className="text-lg text-slate mb-2">
-                          {material.title}
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {material.description}
-                        </p>
-                      </div>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <Badge variant="outline" className="text-xs">
-                          {material.type}
-                        </Badge>
-                        <span className="text-sm text-muted-foreground">
-                          {material.size}
-                        </span>
-                      </div>
-                      <Button size="sm" variant="outline" className="group-hover:bg-accent transition-smooth">
-                        <Download className="h-4 w-4 mr-2" />
-                        Scarica
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+          {freeMaterials.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">
+                {searchTag ? 'Nessun materiale gratuito trovato per questo tag.' : 'Nessun materiale gratuito disponibile.'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {freeMaterials.map((material) => (
+                <MaterialCard
+                  key={material.id}
+                  material={material}
+                  onDownload={downloadMaterial}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -141,66 +158,70 @@ const MaterialiDocenti = () => {
       <section className="py-16 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12">
-            <h2 className="text-3xl font-bold text-slate mb-4">
-              Area docenti riservata
-            </h2>
-            <p className="text-lg text-muted-foreground mb-6">
-              Materiali avanzati e percorsi strutturati per docenti che hanno partecipato ai nostri laboratori.
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-3xl font-bold text-slate mb-4">
+                  Area docenti riservata
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  Materiali avanzati e percorsi strutturati per docenti che hanno partecipato ai nostri laboratori.
+                </p>
+              </div>
+              
+              {hasAccess && (
+                <div className="text-right">
+                  <div className="flex items-center space-x-2 text-green-600 mb-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-sm font-medium">Accesso attivo</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Codice: {accessCode}</p>
+                </div>
+              )}
+            </div>
             
             {/* Access Card */}
-            <Card className="bg-gradient-nature text-white shadow-card border-0 max-w-md">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-3 mb-4">
-                  <Lock className="h-6 w-6" />
-                  <h3 className="text-lg font-semibold">Accesso riservato</h3>
-                </div>
-                <p className="text-white/90 text-sm mb-4">
-                  Inserisci il codice ricevuto dopo il laboratorio per accedere ai materiali premium.
-                </p>
-                <div className="flex space-x-2">
-                  <input 
-                    type="password" 
-                    placeholder="Codice accesso"
-                    className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-white/60 text-sm"
-                  />
-                  <Button variant="secondary" size="sm">
-                    Accedi
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {premiumMaterials.map((material, index) => (
-              <Card key={index} className="shadow-card border-0 opacity-75 relative overflow-hidden">
-                <div className="absolute inset-0 bg-slate/5 flex items-center justify-center">
-                  <Lock className="h-8 w-8 text-muted-foreground" />
-                </div>
-                
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg text-slate mb-2">
-                    {material.title}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {material.description}
-                  </p>
-                </CardHeader>
-
-                <CardContent>
-                  <div className="flex items-center space-x-3">
-                    <Badge variant="outline" className="text-xs">
-                      {material.type}
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      {material.lessons}
-                    </span>
+            {!hasAccess && (
+              <Card className="bg-gradient-nature text-white shadow-card border-0 max-w-md mb-8">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <Lock className="h-6 w-6" />
+                    <h3 className="text-lg font-semibold">Accesso riservato</h3>
                   </div>
+                  <p className="text-white/90 text-sm mb-4">
+                    Inserisci il codice ricevuto dopo il laboratorio per accedere ai materiali premium.
+                  </p>
+                  <Button 
+                    variant="secondary" 
+                    size="sm"
+                    onClick={() => setShowAccessModal(true)}
+                    className="w-full"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Inserisci codice
+                  </Button>
                 </CardContent>
               </Card>
-            ))}
+            )}
           </div>
+
+          {premiumMaterials.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">
+                {searchTag ? 'Nessun materiale premium trovato per questo tag.' : 'Nessun materiale premium disponibile.'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {premiumMaterials.map((material) => (
+                <MaterialCard
+                  key={material.id}
+                  material={material}
+                  onDownload={downloadMaterial}
+                  isLocked={!hasAccess}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -221,6 +242,14 @@ const MaterialiDocenti = () => {
           </div>
         </div>
       </section>
+
+      {/* Access Code Modal */}
+      <AccessCodeModal
+        isOpen={showAccessModal}
+        onClose={() => setShowAccessModal(false)}
+        onSuccess={handleAccessSuccess}
+        validateCode={validateAccessCode}
+      />
     </Layout>
   );
 };

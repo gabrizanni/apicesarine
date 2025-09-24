@@ -118,6 +118,78 @@ export type Database = {
         }
         Relationships: []
       }
+      material_access_codes: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      materials: {
+        Row: {
+          created_at: string
+          description: string | null
+          download_count: number | null
+          file_size: string | null
+          file_type: string
+          file_url: string | null
+          id: string
+          is_premium: boolean | null
+          tags: Json | null
+          target_age_group: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          download_count?: number | null
+          file_size?: string | null
+          file_type: string
+          file_url?: string | null
+          id?: string
+          is_premium?: boolean | null
+          tags?: Json | null
+          target_age_group?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          download_count?: number | null
+          file_size?: string | null
+          file_type?: string
+          file_url?: string | null
+          id?: string
+          is_premium?: boolean | null
+          tags?: Json | null
+          target_age_group?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           content: string | null
@@ -266,6 +338,14 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      increment_download_count: {
+        Args: { material_id: string }
+        Returns: undefined
+      }
+      validate_access_code: {
+        Args: { input_code: string }
         Returns: boolean
       }
     }
