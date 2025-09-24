@@ -92,11 +92,11 @@ const Hero = () => {
       </div>
 
       {/* Background pattern */}
-      <div className="absolute inset-0 opacity-3">
+      <div className="absolute inset-0 opacity-5">
         <svg className="w-full h-full" viewBox="0 0 100 100" fill="none">
           <defs>
             <pattern id="hexagon" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-              <polygon points="10,1 18,6 18,14 10,19 2,14 2,6" fill="currentColor" className="text-honey/30" />
+              <polygon points="10,1 18,6 18,14 10,19 2,14 2,6" fill="currentColor" className="text-honey/20" />
             </pattern>
           </defs>
           <rect width="100" height="100" fill="url(#hexagon)" />
