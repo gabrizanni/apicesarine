@@ -39,18 +39,7 @@ const WorkshopPreview = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-cream/80 via-honey/10 to-forest/10 relative overflow-hidden">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-3">
-        <svg className="w-full h-full" viewBox="0 0 100 100" fill="none">
-          <defs>
-            <pattern id="workshop-hexagon" x="0" y="0" width="15" height="15" patternUnits="userSpaceOnUse">
-              <polygon points="7.5,1 13,4.5 13,10.5 7.5,14 2,10.5 2,4.5" fill="currentColor" className="text-forest/20" />
-            </pattern>
-          </defs>
-          <rect width="100" height="100" fill="url(#workshop-hexagon)" />
-        </svg>
-      </div>
+    <section className="py-16 bg-gradient-to-br from-honey/15 via-cream/70 to-forest/8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-slate mb-4">

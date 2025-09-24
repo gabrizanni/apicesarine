@@ -6,7 +6,7 @@ import heroImage from '@/assets/hero-classroom.jpg';
 
 const Hero = () => {
   return (
-    <section className="relative bg-gradient-to-br from-honey/20 via-cream to-forest/10 overflow-hidden">
+    <section className="relative bg-gradient-to-br from-honey/15 via-cream/70 to-forest/8 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
@@ -92,11 +92,11 @@ const Hero = () => {
       </div>
 
       {/* Background pattern */}
-      <div className="pointer-events-none absolute inset-0 opacity-5">
+      <div className="absolute inset-0 opacity-3">
         <svg className="w-full h-full" viewBox="0 0 100 100" fill="none">
           <defs>
             <pattern id="hexagon" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-              <polygon points="10,1 18,6 18,14 10,19 2,14 2,6" fill="currentColor" />
+              <polygon points="10,1 18,6 18,14 10,19 2,14 2,6" fill="currentColor" className="text-honey/30" />
             </pattern>
           </defs>
           <rect width="100" height="100" fill="url(#hexagon)" />

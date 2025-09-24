@@ -21,7 +21,7 @@ const USPSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-honey/10 via-cream/50 to-forest/5 relative overflow-hidden">
+    <section className="py-16 bg-gradient-to-br from-honey/15 via-cream/70 to-forest/8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-slate mb-4">
