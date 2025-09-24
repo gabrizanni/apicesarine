@@ -63,6 +63,25 @@ const Hero = () => {
                 alt="Bambini che partecipano a un laboratorio sulle api in classe"
                 className="w-full h-full object-cover"
               />
+              
+              {/* Interactive buttons overlay */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 p-8">
+                  <Button asChild variant="hero" size="lg" className="shadow-lg hover:shadow-xl animate-fade-in">
+                    <Link to="/prenota" className="group">
+                      Richiedi un laboratorio
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-smooth" />
+                    </Link>
+                  </Button>
+                  
+                  <Button asChild variant="outline" size="lg" className="bg-white/90 backdrop-blur-sm border-white hover:bg-white shadow-lg hover:shadow-xl animate-fade-in">
+                    <Link to="/galleria" className="group">
+                      <Play className="mr-2 h-4 w-4" />
+                      Guarda i video
+                    </Link>
+                  </Button>
+                </div>
+              </div>
             </div>
             
             {/* Decorative elements */}
