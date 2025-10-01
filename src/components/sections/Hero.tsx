@@ -7,12 +7,12 @@ import heroImage from '@/assets/hero-classroom.jpg';
 const Hero = () => {
   return (
       <section className="relative bg-gradient-to-br from-honey/15 via-cream/70 to-forest/8 overflow-hidden">
-        {/* Hexagon background overlay */}
-        <div className="absolute inset-0 opacity-8 pointer-events-none">
+        {/* Hexagon background overlay (single, subtle) */}
+        <div className="absolute inset-0 pointer-events-none">
           <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" preserveAspectRatio="xMidYMid slice">
             <defs>
-              <pattern id="hexagon-pattern" x="0" y="0" width="15" height="15" patternUnits="userSpaceOnUse">
-                <polygon points="7.5,1 13,4.5 13,10.5 7.5,14 2,10.5 2,4.5" fill="currentColor" className="text-honey/20" />
+              <pattern id="hexagon-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                <polygon points="7.5,1 13,4.5 13,10.5 7.5,14 2,10.5 2,4.5" fill="currentColor" className="text-forest/12" />
               </pattern>
             </defs>
             <rect width="100" height="100" fill="url(#hexagon-pattern)" />
