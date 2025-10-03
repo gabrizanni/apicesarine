@@ -15,8 +15,8 @@ const Layout = ({ children }: LayoutProps) => {
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" preserveAspectRatio="xMidYMid slice">
             <defs>
-              <pattern id="hexagon-main" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
-                <polygon points="2.5,0.3 4.3,1.5 4.3,3.5 2.5,4.7 0.7,3.5 0.7,1.5" fill="currentColor" className="text-honey/[0.08]" />
+              <pattern id="hexagon-main" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+                <polygon points="1.6,0.2 2.8,1 2.8,2.3 1.6,3.1 0.5,2.3 0.5,1" fill="currentColor" className="text-honey/[0.15]" />
               </pattern>
             </defs>
             <rect width="100" height="100" fill="url(#hexagon-main)" />
