@@ -11,8 +11,8 @@ const Hero = () => {
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" preserveAspectRatio="xMidYMid slice">
             <defs>
-              <pattern id="hexagon-hero" x="0" y="0" width="7" height="7" patternUnits="userSpaceOnUse">
-                <polygon points="2.8,0.4 5.0,1.8 5.0,4.0 2.8,5.4 0.8,4.0 0.8,1.8" fill="hsl(40 30% 50% / 0.25)" />
+              <pattern id="hexagon-hero" x="0" y="0" width="14" height="14" patternUnits="userSpaceOnUse">
+                <polygon points="5.6,0.8 10.0,3.6 10.0,8.0 5.6,10.8 1.6,8.0 1.6,3.6" fill="hsl(40 30% 50% / 0.20)" />
               </pattern>
             </defs>
             <rect width="100" height="100" fill="url(#hexagon-hero)" />
