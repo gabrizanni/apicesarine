@@ -6,7 +6,7 @@ import heroImage from '@/assets/hero-classroom.jpg';
 
 const Hero = () => {
   return (
-      <section className="relative bg-gradient-to-br from-honey/15 via-cream/70 to-forest/8 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-honey/20 via-cream/80 to-forest/12 overflow-hidden">
         {/* Hexagon background overlay */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" preserveAspectRatio="xMidYMid slice">
