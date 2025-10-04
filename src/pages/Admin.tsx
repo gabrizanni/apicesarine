@@ -1,3 +1,4 @@
+import { Routes, Route } from 'react-router-dom';
 import { useAdminAuth } from '@/hooks/use-admin-auth';
 import { AdminLogin } from '@/components/admin/AdminLogin';
 import { AdminLayout } from '@/components/admin/AdminLayout';
@@ -17,7 +18,11 @@ const Admin = () => {
     return <AdminLogin onLogin={login} />;
   }
 
-  return <AdminLayout onLogout={logout} />;
+  return (
+    <Routes>
+      <Route path="/*" element={<AdminLayout onLogout={logout} />} />
+    </Routes>
+  );
 };
 
 export default Admin;

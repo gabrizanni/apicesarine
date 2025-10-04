@@ -1,114 +1,54 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogOut, Users, BookOpen, FileText, Calendar, Archive } from 'lucide-react';
-import { WorkshopManager } from './WorkshopManager';
-import { EducatorManager } from './EducatorManager';
-import { PostManager } from './PostManager';
+import { Routes, Route } from 'react-router-dom';
+import { AdminSidebar } from './AdminSidebar';
+import { AdminTopbar } from './AdminTopbar';
+import { AdminDashboard } from './AdminDashboard';
 import { BookingRequestViewer } from './BookingRequestViewer';
-import MaterialManager from './MaterialManager';
 
 interface AdminLayoutProps {
   onLogout: () => void;
 }
 
+const AdminContenuti = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Contenuti</h2>
+    <p className="text-muted-foreground">Gestione workshop, educatori e post in arrivo...</p>
+  </div>
+);
+
+const AdminMedia = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Media</h2>
+    <p className="text-muted-foreground">Gestione materiali e galleria in arrivo...</p>
+  </div>
+);
+
+const AdminImpostazioni = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Impostazioni</h2>
+    <p className="text-muted-foreground">Configurazioni sistema in arrivo...</p>
+  </div>
+);
+
 export const AdminLayout = ({ onLogout }: AdminLayoutProps) => {
-  const [activeTab, setActiveTab] = useState('workshops');
-
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-foreground">Admin CMS</h1>
-          <Button variant="outline" onClick={onLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="workshops" className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              Workshop
-            </TabsTrigger>
-            <TabsTrigger value="educators" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Educatori
-            </TabsTrigger>
-            <TabsTrigger value="posts" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Post
-            </TabsTrigger>
-            <TabsTrigger value="materials" className="flex items-center gap-2">
-              <Archive className="h-4 w-4" />
-              Materiali
-            </TabsTrigger>
-            <TabsTrigger value="bookings" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              Richieste
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="workshops">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestione Workshop</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <WorkshopManager />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="educators">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestione Educatori</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <EducatorManager />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="posts">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestione Post</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <PostManager />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="materials">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestione Materiali</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <MaterialManager />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="bookings">
-            <Card>
-              <CardHeader>
-                <CardTitle>Richieste di Prenotazione</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <BookingRequestViewer />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </main>
+    <div className="min-h-screen bg-background flex">
+      <AdminSidebar />
+      
+      <div className="flex-1 flex flex-col">
+        <AdminTopbar onLogout={onLogout} />
+        
+        <main className="flex-1 overflow-auto">
+          <div className="container mx-auto p-6">
+            <Routes>
+              <Route path="/" element={<AdminDashboard />} />
+              <Route path="/prenotazioni" element={<BookingRequestViewer />} />
+              <Route path="/contenuti" element={<AdminContenuti />} />
+              <Route path="/media" element={<AdminMedia />} />
+              <Route path="/impostazioni" element={<AdminImpostazioni />} />
+            </Routes>
+          </div>
+        </main>
+      </div>
     </div>
   );
 };
