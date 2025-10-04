@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminTopbar } from './AdminTopbar';
 import { AdminDashboard } from './AdminDashboard';
-import { BookingRequestViewer } from './BookingRequestViewer';
+import { BookingRequestsTable } from './bookings/BookingRequestsTable';
 
 interface AdminLayoutProps {
   onLogout: () => void;
@@ -41,7 +41,7 @@ export const AdminLayout = ({ onLogout }: AdminLayoutProps) => {
           <div className="container mx-auto p-6">
             <Routes>
               <Route path="/" element={<AdminDashboard />} />
-              <Route path="/prenotazioni" element={<BookingRequestViewer />} />
+              <Route path="/prenotazioni" element={<BookingRequestsTable />} />
               <Route path="/contenuti" element={<AdminContenuti />} />
               <Route path="/media" element={<AdminMedia />} />
               <Route path="/impostazioni" element={<AdminImpostazioni />} />

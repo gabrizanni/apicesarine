@@ -16,8 +16,10 @@ export type Database = {
     Tables: {
       booking_requests: {
         Row: {
+          assigned_educator_id: string | null
           created_at: string
           id: string
+          internal_notes: string | null
           message: string | null
           notes: string | null
           organization: string | null
@@ -31,8 +33,10 @@ export type Database = {
           workshop_id: string | null
         }
         Insert: {
+          assigned_educator_id?: string | null
           created_at?: string
           id?: string
+          internal_notes?: string | null
           message?: string | null
           notes?: string | null
           organization?: string | null
@@ -46,8 +50,10 @@ export type Database = {
           workshop_id?: string | null
         }
         Update: {
+          assigned_educator_id?: string | null
           created_at?: string
           id?: string
+          internal_notes?: string | null
           message?: string | null
           notes?: string | null
           organization?: string | null
@@ -61,6 +67,13 @@ export type Database = {
           workshop_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "booking_requests_assigned_educator_id_fkey"
+            columns: ["assigned_educator_id"]
+            isOneToOne: false
+            referencedRelation: "educators"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "booking_requests_workshop_id_fkey"
             columns: ["workshop_id"]

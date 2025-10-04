@@ -8,6 +8,7 @@ interface AdminTopbarProps {
 
 const breadcrumbMap: Record<string, string> = {
   '/admin': 'Dashboard',
+  '/admin/prenotazioni': 'Prenotazioni',
   '/admin/contenuti': 'Contenuti',
   '/admin/media': 'Media',
   '/admin/impostazioni': 'Impostazioni',

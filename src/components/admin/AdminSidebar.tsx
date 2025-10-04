@@ -3,7 +3,8 @@ import { Calendar, FileText, Image, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const menuItems = [
-  { title: 'Prenotazioni', path: '/admin', icon: Calendar, exact: true },
+  { title: 'Dashboard', path: '/admin', icon: Calendar, exact: true },
+  { title: 'Prenotazioni', path: '/admin/prenotazioni', icon: Calendar },
   { title: 'Contenuti', path: '/admin/contenuti', icon: FileText },
   { title: 'Media', path: '/admin/media', icon: Image },
   { title: 'Impostazioni', path: '/admin/impostazioni', icon: Settings },
