@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminTopbar } from './AdminTopbar';
 import { AdminDashboard } from './AdminDashboard';
-import { BookingRequestsTable } from './bookings/BookingRequestsTable';
+import { BookingRequestsTable } from './BookingRequestsTable';
 
 interface AdminLayoutProps {
   onLogout: () => void;

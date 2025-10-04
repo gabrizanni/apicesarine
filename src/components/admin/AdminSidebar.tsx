@@ -1,9 +1,9 @@
 import { NavLink } from 'react-router-dom';
-import { Calendar, FileText, Image, Settings } from 'lucide-react';
+import { LayoutDashboard, Calendar, FileText, Image, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const menuItems = [
-  { title: 'Dashboard', path: '/admin', icon: Calendar, exact: true },
+  { title: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
   { title: 'Prenotazioni', path: '/admin/prenotazioni', icon: Calendar },
   { title: 'Contenuti', path: '/admin/contenuti', icon: FileText },
   { title: 'Media', path: '/admin/media', icon: Image },
