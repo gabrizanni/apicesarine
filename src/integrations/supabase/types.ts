@@ -90,12 +90,15 @@ export type Database = {
           available_regions: Json | null
           avatar_url: string | null
           bio: string | null
+          cover_image_alt: string | null
+          cover_image_url: string | null
           created_at: string
           email: string | null
           id: string
           is_active: boolean | null
           name: string
           phone: string | null
+          slug: string | null
           specialization: string | null
           updated_at: string
         }
@@ -105,12 +108,15 @@ export type Database = {
           available_regions?: Json | null
           avatar_url?: string | null
           bio?: string | null
+          cover_image_alt?: string | null
+          cover_image_url?: string | null
           created_at?: string
           email?: string | null
           id?: string
           is_active?: boolean | null
           name: string
           phone?: string | null
+          slug?: string | null
           specialization?: string | null
           updated_at?: string
         }
@@ -120,12 +126,15 @@ export type Database = {
           available_regions?: Json | null
           avatar_url?: string | null
           bio?: string | null
+          cover_image_alt?: string | null
+          cover_image_url?: string | null
           created_at?: string
           email?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
           phone?: string | null
+          slug?: string | null
           specialization?: string | null
           updated_at?: string
         }
@@ -208,9 +217,11 @@ export type Database = {
           content: string | null
           created_at: string
           excerpt: string | null
+          featured_image_alt: string | null
           featured_image_url: string | null
           id: string
           published_at: string | null
+          slug: string | null
           status: string | null
           title: string
           updated_at: string
@@ -219,9 +230,11 @@ export type Database = {
           content?: string | null
           created_at?: string
           excerpt?: string | null
+          featured_image_alt?: string | null
           featured_image_url?: string | null
           id?: string
           published_at?: string | null
+          slug?: string | null
           status?: string | null
           title: string
           updated_at?: string
@@ -230,9 +243,11 @@ export type Database = {
           content?: string | null
           created_at?: string
           excerpt?: string | null
+          featured_image_alt?: string | null
           featured_image_url?: string | null
           id?: string
           published_at?: string | null
+          slug?: string | null
           status?: string | null
           title?: string
           updated_at?: string
@@ -266,6 +281,33 @@ export type Database = {
         }
         Relationships: []
       }
+      redirects: {
+        Row: {
+          created_at: string
+          from_path: string
+          id: string
+          status_code: number
+          to_path: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          from_path: string
+          id?: string
+          status_code?: number
+          to_path: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          from_path?: string
+          id?: string
+          status_code?: number
+          to_path?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -292,6 +334,8 @@ export type Database = {
       }
       workshops: {
         Row: {
+          cover_image_alt: string | null
+          cover_image_url: string | null
           created_at: string
           description: string | null
           duration_minutes: number | null
@@ -299,10 +343,13 @@ export type Database = {
           is_active: boolean | null
           max_participants: number | null
           price: number | null
+          slug: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          cover_image_alt?: string | null
+          cover_image_url?: string | null
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
@@ -310,10 +357,13 @@ export type Database = {
           is_active?: boolean | null
           max_participants?: number | null
           price?: number | null
+          slug?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          cover_image_alt?: string | null
+          cover_image_url?: string | null
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
@@ -321,6 +371,7 @@ export type Database = {
           is_active?: boolean | null
           max_participants?: number | null
           price?: number | null
+          slug?: string | null
           title?: string
           updated_at?: string
         }

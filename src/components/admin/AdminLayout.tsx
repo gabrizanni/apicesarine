@@ -8,12 +8,9 @@ interface AdminLayoutProps {
   onLogout: () => void;
 }
 
-const AdminContenuti = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Contenuti</h2>
-    <p className="text-muted-foreground">Gestione workshop, educatori e post in arrivo...</p>
-  </div>
-);
+import { ContentManagement } from './ContentManagement';
+
+const AdminContenuti = () => <ContentManagement />;
 
 const AdminMedia = () => (
   <div className="p-6">
