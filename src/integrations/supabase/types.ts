@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_audit: {
+        Row: {
+          action: string
+          booking_id: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          user_email: string | null
+        }
+        Insert: {
+          action: string
+          booking_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          user_email?: string | null
+        }
+        Update: {
+          action?: string
+          booking_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          user_email?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_audit_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "booking_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_requests: {
         Row: {
           assigned_educator_id: string | null
@@ -406,6 +441,15 @@ export type Database = {
       }
       increment_download_count: {
         Args: { material_id: string }
+        Returns: undefined
+      }
+      log_booking_audit: {
+        Args: {
+          p_action: string
+          p_booking_id?: string
+          p_metadata?: Json
+          p_user_email: string
+        }
         Returns: undefined
       }
       validate_access_code: {
