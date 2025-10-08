@@ -128,9 +128,11 @@ export type Database = {
           cover_image_alt: string | null
           cover_image_url: string | null
           created_at: string
+          demo_source: string | null
           email: string | null
           id: string
           is_active: boolean | null
+          is_demo: boolean | null
           name: string
           phone: string | null
           slug: string | null
@@ -146,9 +148,11 @@ export type Database = {
           cover_image_alt?: string | null
           cover_image_url?: string | null
           created_at?: string
+          demo_source?: string | null
           email?: string | null
           id?: string
           is_active?: boolean | null
+          is_demo?: boolean | null
           name: string
           phone?: string | null
           slug?: string | null
@@ -164,13 +168,99 @@ export type Database = {
           cover_image_alt?: string | null
           cover_image_url?: string | null
           created_at?: string
+          demo_source?: string | null
           email?: string | null
           id?: string
           is_active?: boolean | null
+          is_demo?: boolean | null
           name?: string
           phone?: string | null
           slug?: string | null
           specialization?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      faqs: {
+        Row: {
+          answer: string
+          category: string | null
+          created_at: string
+          demo_source: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          is_demo: boolean | null
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          category?: string | null
+          created_at?: string
+          demo_source?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_demo?: boolean | null
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          category?: string | null
+          created_at?: string
+          demo_source?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_demo?: boolean | null
+          question?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gallery_items: {
+        Row: {
+          category: string | null
+          created_at: string
+          demo_source: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          image_alt: string | null
+          image_url: string
+          is_active: boolean | null
+          is_demo: boolean | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          demo_source?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_alt?: string | null
+          image_url: string
+          is_active?: boolean | null
+          is_demo?: boolean | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          demo_source?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_alt?: string | null
+          image_url?: string
+          is_active?: boolean | null
+          is_demo?: boolean | null
+          title?: string
           updated_at?: string
         }
         Relationships: []
@@ -205,12 +295,14 @@ export type Database = {
       materials: {
         Row: {
           created_at: string
+          demo_source: string | null
           description: string | null
           download_count: number | null
           file_size: string | null
           file_type: string
           file_url: string | null
           id: string
+          is_demo: boolean | null
           is_premium: boolean | null
           tags: Json | null
           target_age_group: string | null
@@ -219,12 +311,14 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          demo_source?: string | null
           description?: string | null
           download_count?: number | null
           file_size?: string | null
           file_type: string
           file_url?: string | null
           id?: string
+          is_demo?: boolean | null
           is_premium?: boolean | null
           tags?: Json | null
           target_age_group?: string | null
@@ -233,12 +327,14 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          demo_source?: string | null
           description?: string | null
           download_count?: number | null
           file_size?: string | null
           file_type?: string
           file_url?: string | null
           id?: string
+          is_demo?: boolean | null
           is_premium?: boolean | null
           tags?: Json | null
           target_age_group?: string | null
@@ -247,14 +343,58 @@ export type Database = {
         }
         Relationships: []
       }
+      partners: {
+        Row: {
+          created_at: string
+          demo_source: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          is_demo: boolean | null
+          logo_url: string | null
+          name: string
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          demo_source?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_demo?: boolean | null
+          logo_url?: string | null
+          name: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          demo_source?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_demo?: boolean | null
+          logo_url?: string | null
+          name?: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           content: string | null
           created_at: string
+          demo_source: string | null
           excerpt: string | null
           featured_image_alt: string | null
           featured_image_url: string | null
           id: string
+          is_demo: boolean | null
           published_at: string | null
           slug: string | null
           status: string | null
@@ -264,10 +404,12 @@ export type Database = {
         Insert: {
           content?: string | null
           created_at?: string
+          demo_source?: string | null
           excerpt?: string | null
           featured_image_alt?: string | null
           featured_image_url?: string | null
           id?: string
+          is_demo?: boolean | null
           published_at?: string | null
           slug?: string | null
           status?: string | null
@@ -277,10 +419,12 @@ export type Database = {
         Update: {
           content?: string | null
           created_at?: string
+          demo_source?: string | null
           excerpt?: string | null
           featured_image_alt?: string | null
           featured_image_url?: string | null
           id?: string
+          is_demo?: boolean | null
           published_at?: string | null
           slug?: string | null
           status?: string | null
@@ -372,10 +516,12 @@ export type Database = {
           cover_image_alt: string | null
           cover_image_url: string | null
           created_at: string
+          demo_source: string | null
           description: string | null
           duration_minutes: number | null
           id: string
           is_active: boolean | null
+          is_demo: boolean | null
           max_participants: number | null
           price: number | null
           slug: string | null
@@ -386,10 +532,12 @@ export type Database = {
           cover_image_alt?: string | null
           cover_image_url?: string | null
           created_at?: string
+          demo_source?: string | null
           description?: string | null
           duration_minutes?: number | null
           id?: string
           is_active?: boolean | null
+          is_demo?: boolean | null
           max_participants?: number | null
           price?: number | null
           slug?: string | null
@@ -400,10 +548,12 @@ export type Database = {
           cover_image_alt?: string | null
           cover_image_url?: string | null
           created_at?: string
+          demo_source?: string | null
           description?: string | null
           duration_minutes?: number | null
           id?: string
           is_active?: boolean | null
+          is_demo?: boolean | null
           max_participants?: number | null
           price?: number | null
           slug?: string | null

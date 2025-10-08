@@ -12,3 +12,6 @@ verify_jwt = false
 
 [functions.health]
 verify_jwt = false
+
+[functions.import-demo-data]
+verify_jwt = false
