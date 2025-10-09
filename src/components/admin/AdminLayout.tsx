@@ -9,22 +9,18 @@ interface AdminLayoutProps {
 }
 
 import { ContentManagement } from './ContentManagement';
+import { AdminSettings } from './AdminSettings';
 
 const AdminContenuti = () => <ContentManagement />;
 
 const AdminMedia = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Media</h2>
-    <p className="text-muted-foreground">Gestione materiali e galleria in arrivo...</p>
+    <p className="text-muted-foreground">Gestione materiali e galleria disponibili nella sezione Contenuti.</p>
   </div>
 );
 
-const AdminImpostazioni = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Impostazioni</h2>
-    <p className="text-muted-foreground">Configurazioni sistema in arrivo...</p>
-  </div>
-);
+const AdminImpostazioni = () => <AdminSettings />;
 
 export const AdminLayout = ({ onLogout }: AdminLayoutProps) => {
   return (

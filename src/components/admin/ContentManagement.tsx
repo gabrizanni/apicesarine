@@ -2,6 +2,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { WorkshopManager } from './WorkshopManager';
 import { EducatorManager } from './EducatorManager';
 import { PostManager } from './PostManager';
+import { FaqManager } from './FaqManager';
+import { PartnerManager } from './PartnerManager';
+import { GalleryManager } from './GalleryManager';
+import MaterialManager from './MaterialManager';
 
 export const ContentManagement = () => {
   return (
@@ -9,10 +13,14 @@ export const ContentManagement = () => {
       <h2 className="text-2xl font-bold mb-6">Gestione Contenuti</h2>
       
       <Tabs defaultValue="workshops" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className="grid w-full grid-cols-7 mb-6">
           <TabsTrigger value="workshops">Workshop</TabsTrigger>
           <TabsTrigger value="educators">Educatori</TabsTrigger>
           <TabsTrigger value="posts">Post</TabsTrigger>
+          <TabsTrigger value="faqs">FAQ</TabsTrigger>
+          <TabsTrigger value="partners">Partner</TabsTrigger>
+          <TabsTrigger value="gallery">Galleria</TabsTrigger>
+          <TabsTrigger value="materials">Materiali</TabsTrigger>
         </TabsList>
 
         <TabsContent value="workshops">
@@ -25,6 +33,22 @@ export const ContentManagement = () => {
 
         <TabsContent value="posts">
           <PostManager />
+        </TabsContent>
+
+        <TabsContent value="faqs">
+          <FaqManager />
+        </TabsContent>
+
+        <TabsContent value="partners">
+          <PartnerManager />
+        </TabsContent>
+
+        <TabsContent value="gallery">
+          <GalleryManager />
+        </TabsContent>
+
+        <TabsContent value="materials">
+          <MaterialManager />
         </TabsContent>
       </Tabs>
     </div>

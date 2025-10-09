@@ -9,11 +9,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { ImageUpload } from './ImageUpload';
 import { slugify } from '@/lib/slugify';
 import { z } from 'zod';
+import { DemoContentFilter } from './DemoContentFilter';
+import { DemoBadge } from './DemoBadge';
+import { DemoActions } from './DemoActions';
+import { BulkDemoActions } from './BulkDemoActions';
 
 const workshopSchema = z.object({
   title: z.string().min(1, 'Il titolo è obbligatorio').max(200),
@@ -38,6 +43,8 @@ interface Workshop {
   cover_image_url: string | null;
   cover_image_alt: string | null;
   is_active: boolean;
+  is_demo?: boolean;
+  demo_source?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -49,6 +56,8 @@ export const WorkshopManager = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [workshopToDelete, setWorkshopToDelete] = useState<string | null>(null);
+  const [includeDemos, setIncludeDemos] = useState(true);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -65,15 +74,20 @@ export const WorkshopManager = () => {
 
   useEffect(() => {
     fetchWorkshops();
-  }, []);
+  }, [includeDemos]);
 
   const fetchWorkshops = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('workshops')
         .select('*')
         .order('created_at', { ascending: false });
 
+      if (!includeDemos) {
+        query = query.or('is_demo.is.null,is_demo.eq.false');
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       setWorkshops(data || []);
     } catch (error: any) {
@@ -232,10 +246,22 @@ export const WorkshopManager = () => {
     return <div className="flex items-center justify-center p-8">Caricamento...</div>;
   }
 
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Workshop ({workshops.length})</h3>
+        <div className="flex items-center space-x-4">
+          <h3 className="text-lg font-semibold">Workshop ({workshops.length})</h3>
+          <DemoContentFilter 
+            includeDemos={includeDemos} 
+            onToggle={setIncludeDemos} 
+          />
+        </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={resetForm}>
@@ -346,11 +372,30 @@ export const WorkshopManager = () => {
         </Dialog>
       </div>
 
+      <BulkDemoActions
+        selectedIds={selectedIds}
+        table="workshops"
+        onUpdate={fetchWorkshops}
+        onClearSelection={() => setSelectedIds([])}
+      />
+
       <Card>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">
+                  <Checkbox
+                    checked={selectedIds.length === workshops.filter(w => w.is_demo).length && workshops.some(w => w.is_demo)}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setSelectedIds(workshops.filter(w => w.is_demo).map(w => w.id));
+                      } else {
+                        setSelectedIds([]);
+                      }
+                    }}
+                  />
+                </TableHead>
                 <TableHead>Titolo</TableHead>
                 <TableHead>Slug</TableHead>
                 <TableHead>Durata</TableHead>
@@ -363,7 +408,18 @@ export const WorkshopManager = () => {
             <TableBody>
               {workshops.map((workshop) => (
                 <TableRow key={workshop.id}>
-                  <TableCell className="font-medium">{workshop.title}</TableCell>
+                  <TableCell>
+                    {workshop.is_demo && (
+                      <Checkbox
+                        checked={selectedIds.includes(workshop.id)}
+                        onCheckedChange={() => toggleSelection(workshop.id)}
+                      />
+                    )}
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {workshop.title}
+                    <DemoBadge isDemo={workshop.is_demo} />
+                  </TableCell>
                   <TableCell className="text-sm text-muted-foreground">{workshop.slug || '-'}</TableCell>
                   <TableCell>{workshop.duration_minutes ? `${workshop.duration_minutes} min` : '-'}</TableCell>
                   <TableCell>{workshop.max_participants || '-'}</TableCell>
@@ -377,23 +433,35 @@ export const WorkshopManager = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(workshop)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setWorkshopToDelete(workshop.id);
-                          setDeleteDialogOpen(true);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {workshop.is_demo ? (
+                        <DemoActions
+                          id={workshop.id}
+                          isDemo={workshop.is_demo}
+                          table="workshops"
+                          onUpdate={fetchWorkshops}
+                          item={workshop}
+                        />
+                      ) : (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEdit(workshop)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setWorkshopToDelete(workshop.id);
+                              setDeleteDialogOpen(true);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
