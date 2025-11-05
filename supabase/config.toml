@@ -15,3 +15,15 @@ verify_jwt = false
 
 [functions.import-demo-data]
 verify_jwt = false
+
+[functions.admin-import-demo]
+verify_jwt = true
+
+[functions.get-booking-details]
+verify_jwt = true
+
+[functions.update-booking-status]
+verify_jwt = true
+
+[functions.manage-demo-content]
+verify_jwt = true

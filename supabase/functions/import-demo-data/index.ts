@@ -1,7 +1,110 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 
 const ADMIN_PASS = Deno.env.get('ADMIN_PASS');
+
+// Input validation schemas
+const educatorSchema = z.object({
+  name: z.string().min(1).max(200),
+  slug: z.string().regex(/^[a-z0-9-]+$/).max(100),
+  bio: z.string().max(5000).optional(),
+  email: z.string().email().max(255).optional().nullable(),
+  phone: z.string().max(50).optional().nullable(),
+  specialization: z.string().max(200).optional().nullable(),
+  avatar_url: z.string().url().max(500).optional().nullable(),
+  cover_image_url: z.string().url().max(500).optional().nullable(),
+  cover_image_alt: z.string().max(200).optional().nullable(),
+  available_days: z.array(z.string()).optional(),
+  available_regions: z.array(z.string()).optional(),
+  availability_notes: z.string().max(1000).optional().nullable(),
+  is_active: z.boolean().optional(),
+  is_demo: z.boolean().optional(),
+  demo_source: z.string().max(100).optional().nullable()
+});
+
+const workshopSchema = z.object({
+  title: z.string().min(1).max(200),
+  slug: z.string().regex(/^[a-z0-9-]+$/).max(100),
+  description: z.string().max(5000).optional().nullable(),
+  duration_minutes: z.number().int().positive().max(600).optional().nullable(),
+  max_participants: z.number().int().positive().max(1000).optional().nullable(),
+  price: z.number().nonnegative().max(10000).optional().nullable(),
+  cover_image_url: z.string().url().max(500).optional().nullable(),
+  cover_image_alt: z.string().max(200).optional().nullable(),
+  is_active: z.boolean().optional(),
+  is_demo: z.boolean().optional(),
+  demo_source: z.string().max(100).optional().nullable()
+});
+
+const postSchema = z.object({
+  title: z.string().min(1).max(200),
+  slug: z.string().regex(/^[a-z0-9-]+$/).max(100),
+  excerpt: z.string().max(500).optional().nullable(),
+  content: z.string().max(50000).optional().nullable(),
+  featured_image_url: z.string().url().max(500).optional().nullable(),
+  featured_image_alt: z.string().max(200).optional().nullable(),
+  status: z.enum(['draft', 'published']).optional(),
+  published_at: z.string().optional().nullable(),
+  is_demo: z.boolean().optional(),
+  demo_source: z.string().max(100).optional().nullable()
+});
+
+const faqSchema = z.object({
+  question: z.string().min(1).max(500),
+  answer: z.string().min(1).max(5000),
+  category: z.string().max(100).optional().nullable(),
+  display_order: z.number().int().nonnegative().max(1000).optional(),
+  is_active: z.boolean().optional(),
+  is_demo: z.boolean().optional(),
+  demo_source: z.string().max(100).optional().nullable()
+});
+
+const galleryItemSchema = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().max(1000).optional().nullable(),
+  image_url: z.string().url().max(500),
+  image_alt: z.string().max(200).optional().nullable(),
+  category: z.string().max(100).optional().nullable(),
+  display_order: z.number().int().nonnegative().max(1000).optional(),
+  is_active: z.boolean().optional(),
+  is_demo: z.boolean().optional(),
+  demo_source: z.string().max(100).optional().nullable()
+});
+
+const partnerSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().max(1000).optional().nullable(),
+  logo_url: z.string().url().max(500).optional().nullable(),
+  website_url: z.string().url().max(500).optional().nullable(),
+  display_order: z.number().int().nonnegative().max(1000).optional(),
+  is_active: z.boolean().optional(),
+  is_demo: z.boolean().optional(),
+  demo_source: z.string().max(100).optional().nullable()
+});
+
+const materialSchema = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().max(2000).optional().nullable(),
+  file_url: z.string().url().max(500).optional().nullable(),
+  file_type: z.string().max(50),
+  file_size: z.string().max(50).optional().nullable(),
+  tags: z.array(z.string()).optional(),
+  target_age_group: z.string().max(100).optional().nullable(),
+  is_premium: z.boolean().optional(),
+  is_demo: z.boolean().optional(),
+  demo_source: z.string().max(100).optional().nullable()
+});
+
+const demoDataSchema = z.object({
+  educators: z.array(educatorSchema).optional(),
+  workshops: z.array(workshopSchema).optional(),
+  posts: z.array(postSchema).optional(),
+  faqs: z.array(faqSchema).optional(),
+  galleryItems: z.array(galleryItemSchema).optional(),
+  partners: z.array(partnerSchema).optional(),
+  resources: z.array(materialSchema).optional()
+});
 
 interface ImportResult {
   type: string;
@@ -31,6 +134,21 @@ Deno.serve(async (req) => {
     );
 
     const { demoData } = await req.json();
+    
+    // Validate input data
+    try {
+      demoDataSchema.parse(demoData);
+    } catch (error) {
+      console.error('Validation error:', error);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid demo data format',
+          details: error.errors || error.message
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const results: ImportResult[] = [];
 
     // Import Educators

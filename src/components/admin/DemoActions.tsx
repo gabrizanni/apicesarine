@@ -30,10 +30,13 @@ export const DemoActions = ({ id, isDemo, table, onUpdate, item }: DemoActionsPr
 
   const handleConvertToReal = async () => {
     try {
-      const { error } = await supabase
-        .from(table as any)
-        .update({ is_demo: false, demo_source: null })
-        .eq('id', id);
+      const { error } = await supabase.functions.invoke('manage-demo-content', {
+        body: {
+          action: 'convert',
+          table,
+          ids: [id]
+        }
+      });
 
       if (error) throw error;
 
@@ -64,13 +67,18 @@ export const DemoActions = ({ id, isDemo, table, onUpdate, item }: DemoActionsPr
         ...itemData,
         ...(newSlug && { slug: newSlug }),
         is_demo: false,
-        is_active: false, // Set as inactive draft
+        is_active: false,
         demo_source: null
       };
 
-      const { error } = await supabase
-        .from(table as any)
-        .insert([duplicateData]);
+      const { error } = await supabase.functions.invoke('manage-demo-content', {
+        body: {
+          action: 'duplicate',
+          table,
+          ids: [id],
+          data: duplicateData
+        }
+      });
 
       if (error) throw error;
 
@@ -91,11 +99,13 @@ export const DemoActions = ({ id, isDemo, table, onUpdate, item }: DemoActionsPr
 
   const handleDelete = async () => {
     try {
-      const { error } = await supabase
-        .from(table as any)
-        .delete()
-        .eq('id', id)
-        .eq('is_demo', true); // Extra safety check
+      const { error } = await supabase.functions.invoke('manage-demo-content', {
+        body: {
+          action: 'delete',
+          table,
+          ids: [id]
+        }
+      });
 
       if (error) throw error;
 

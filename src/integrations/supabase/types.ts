@@ -568,7 +568,7 @@ export type Database = {
     }
     Functions: {
       get_public_educator_profiles: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           available_days: Json
           available_regions: Json
@@ -602,10 +602,7 @@ export type Database = {
         }
         Returns: undefined
       }
-      validate_access_code: {
-        Args: { input_code: string }
-        Returns: boolean
-      }
+      validate_access_code: { Args: { input_code: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"

@@ -28,11 +28,13 @@ export const BulkDemoActions = ({ selectedIds, table, onUpdate, onClearSelection
 
   const handleBulkConvert = async () => {
     try {
-      const { error } = await supabase
-        .from(table as any)
-        .update({ is_demo: false, demo_source: null })
-        .in('id', selectedIds)
-        .eq('is_demo', true);
+      const { error } = await supabase.functions.invoke('manage-demo-content', {
+        body: {
+          action: 'convert',
+          table,
+          ids: selectedIds
+        }
+      });
 
       if (error) throw error;
 
@@ -54,11 +56,13 @@ export const BulkDemoActions = ({ selectedIds, table, onUpdate, onClearSelection
 
   const handleBulkDelete = async () => {
     try {
-      const { error } = await supabase
-        .from(table as any)
-        .delete()
-        .in('id', selectedIds)
-        .eq('is_demo', true); // Extra safety check
+      const { error } = await supabase.functions.invoke('manage-demo-content', {
+        body: {
+          action: 'delete',
+          table,
+          ids: selectedIds
+        }
+      });
 
       if (error) throw error;
 

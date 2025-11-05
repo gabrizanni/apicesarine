@@ -14,7 +14,7 @@ export const AdminSettings = () => {
     setIsImporting(true);
     
     try {
-      const response = await supabase.functions.invoke('import-demo-data', {
+      const response = await supabase.functions.invoke('admin-import-demo', {
         body: {
           demoData: {
             educators: demoEducators,
@@ -25,9 +25,6 @@ export const AdminSettings = () => {
             galleryItems: demoGalleryItems,
             resources: demoResources
           }
-        },
-        headers: {
-          'X-Admin-Password': import.meta.env.VITE_ADMIN_PASS || ''
         }
       });
 
