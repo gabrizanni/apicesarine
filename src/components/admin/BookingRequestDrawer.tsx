@@ -90,13 +90,12 @@ export const BookingRequestDrawer = ({ bookingId, open, onClose, onUpdate }: Boo
   const loadBookingDetails = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('booking_requests')
-        .select('*')
-        .eq('id', bookingId)
-        .single();
+      const { data, error } = await supabase.functions.invoke('get-booking-details', {
+        body: { bookingId }
+      });
 
       if (error) throw error;
+      if (!data) throw new Error('No booking data received');
       
       setBooking(data);
       setInternalNotes(data.internal_notes || '');
@@ -130,10 +129,14 @@ export const BookingRequestDrawer = ({ bookingId, open, onClose, onUpdate }: Boo
 
   const autoSaveNotes = async () => {
     try {
-      const { error } = await supabase
-        .from('booking_requests')
-        .update({ internal_notes: internalNotes })
-        .eq('id', bookingId);
+      const { error } = await supabase.functions.invoke('update-booking-status', {
+        body: {
+          bookingId,
+          status,
+          assignedEducatorId: assignedEducatorId || null,
+          internalNotes
+        }
+      });
 
       if (error) throw error;
     } catch (err) {
@@ -144,10 +147,14 @@ export const BookingRequestDrawer = ({ bookingId, open, onClose, onUpdate }: Boo
   const updateStatus = async () => {
     try {
       setSaving(true);
-      const { error } = await supabase
-        .from('booking_requests')
-        .update({ status, assigned_educator_id: assignedEducatorId || null })
-        .eq('id', bookingId);
+      const { error } = await supabase.functions.invoke('update-booking-status', {
+        body: {
+          bookingId,
+          status,
+          assignedEducatorId: assignedEducatorId || null,
+          internalNotes
+        }
+      });
 
       if (error) throw error;
 

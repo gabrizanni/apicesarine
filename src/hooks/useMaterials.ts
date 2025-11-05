@@ -84,12 +84,23 @@ export const useMaterials = () => {
 
   const validateAccessCode = async (code: string): Promise<boolean> => {
     try {
-      const { data, error } = await supabase.rpc('validate_access_code', {
-        input_code: code
+      const { data, error } = await supabase.functions.invoke('validate-access-code', {
+        body: { code }
       });
 
-      if (error) throw error;
-      return data === true;
+      if (error) {
+        // Show user-friendly error for rate limiting
+        if (error.message?.includes('Troppi tentativi')) {
+          toast({
+            title: "Troppi tentativi",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+        throw error;
+      }
+      
+      return data?.valid === true;
     } catch (error) {
       console.error('Error validating access code:', error);
       return false;

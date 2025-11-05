@@ -366,6 +366,19 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Log booking submission to audit trail
+    await supabase.rpc('log_booking_audit', {
+      p_user_email: bookingData.email,
+      p_booking_id: booking.id,
+      p_action: 'booking_submitted',
+      p_metadata: {
+        organization: bookingData.schoolName,
+        workshop_program: bookingData.workshopProgram,
+        students: parseInt(bookingData.students),
+        preferred_date: bookingData.datePreference1 || null
+      }
+    });
+
     // Send emails if Resend is configured
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     const adminEmail = Deno.env.get('ADMIN_EMAIL');
@@ -391,9 +404,29 @@ const handler = async (req: Request): Promise<Response> => {
         });
 
         console.log('Emails sent successfully');
+
+        // Log successful email sending
+        await supabase.rpc('log_booking_audit', {
+          p_user_email: bookingData.email,
+          p_booking_id: booking.id,
+          p_action: 'booking_emails_sent',
+          p_metadata: {
+            admin_email: adminEmail,
+            requester_email: bookingData.email
+          }
+        });
       } catch (emailError) {
         console.error('Email error:', emailError);
-        // Don't fail the request if email fails
+        
+        // Log email failure
+        await supabase.rpc('log_booking_audit', {
+          p_user_email: bookingData.email,
+          p_booking_id: booking.id,
+          p_action: 'booking_emails_failed',
+          p_metadata: {
+            error: String(emailError)
+          }
+        });
       }
     }
 

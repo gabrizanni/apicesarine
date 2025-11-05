@@ -27,3 +27,6 @@ verify_jwt = true
 
 [functions.manage-demo-content]
 verify_jwt = true
+
+[functions.validate-access-code]
+verify_jwt = false
