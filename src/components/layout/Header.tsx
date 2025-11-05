@@ -4,27 +4,41 @@ import { Flower2 } from 'lucide-react';
 import { Button } from '@/components/ui/custom-button';
 import MobileNav from './MobileNav';
 import { cn } from '@/lib/utils';
-
 const Header = () => {
   const location = useLocation();
-
-  const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'Laboratori', href: '/laboratori' },
-    { name: 'Educatori', href: '/educatori' },
-    { name: 'Materiali', href: '/materiali-docenti' },
-    { name: 'Chi Siamo', href: '/chi-siamo' },
-    { name: 'Storie', href: '/storie' },
-    { name: 'Galleria', href: '/galleria' },
-    { name: 'Contatti', href: '/contatti' },
-    { name: 'FAQ', href: '/faq' },
-    { name: 'Glossario', href: '/glossario' },
-  ];
-
+  const navigation = [{
+    name: 'Home',
+    href: '/'
+  }, {
+    name: 'Laboratori',
+    href: '/laboratori'
+  }, {
+    name: 'Educatori',
+    href: '/educatori'
+  }, {
+    name: 'Materiali',
+    href: '/materiali-docenti'
+  }, {
+    name: 'Chi Siamo',
+    href: '/chi-siamo'
+  }, {
+    name: 'Storie',
+    href: '/storie'
+  }, {
+    name: 'Galleria',
+    href: '/galleria'
+  }, {
+    name: 'Contatti',
+    href: '/contatti'
+  }, {
+    name: 'FAQ',
+    href: '/faq'
+  }, {
+    name: 'Glossario',
+    href: '/glossario'
+  }];
   const isActive = (path: string) => location.pathname === path;
-
-  return (
-    <>
+  return <>
       {/* Skip to main content link */}
       <a href="#main-content" className="skip-link">
         Salta al contenuto principale
@@ -43,27 +57,15 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8" role="navigation" aria-label="Menu principale">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={cn(
-                  "text-sm font-medium transition-smooth hover:text-primary focus-ring rounded-lg px-3 py-2",
-                  isActive(item.href) 
-                    ? "text-primary bg-accent border border-accent-foreground/20 shadow-sm" 
-                    : "text-muted-foreground hover:bg-accent/50"
-                )}
-                aria-current={isActive(item.href) ? "page" : undefined}
-              >
+            {navigation.map(item => <Link key={item.name} to={item.href} className={cn("text-sm font-medium transition-smooth hover:text-primary focus-ring rounded-lg px-3 py-2", isActive(item.href) ? "text-primary bg-accent border border-accent-foreground/20 shadow-sm" : "text-muted-foreground hover:bg-accent/50")} aria-current={isActive(item.href) ? "page" : undefined}>
                 {item.name}
-              </Link>
-            ))}
+              </Link>)}
           </nav>
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
             <Button asChild variant="cta" size="lg" className="focus-ring">
-              <Link to="/prenota" aria-label="Richiedi un laboratorio didattico">Richiedi un laboratorio</Link>
+              
             </Button>
           </div>
 
@@ -72,8 +74,6 @@ const Header = () => {
           </div>
         </div>
     </header>
-    </>
-  );
+    </>;
 };
-
 export default Header;
