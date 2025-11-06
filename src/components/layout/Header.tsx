@@ -26,24 +26,17 @@ const Header = () => {
         { name: 'Educatori', href: '/educatori', description: 'Il nostro team di esperti' },
       ]
     },
-    { name: 'Per le scuole', href: '/chi-siamo' },
     {
       name: 'Risorse',
       items: [
-        { name: 'Materiali docenti', href: '/materiali-docenti', description: 'Risorse educative gratuite' },
+        { name: 'Materiali', href: '/materiali-docenti', description: 'Risorse educative gratuite' },
+        { name: 'Galleria', href: '/galleria', description: 'Le nostre attività in foto' },
         { name: 'Storie', href: '/storie', description: 'Esperienze e testimonianze' },
-        { name: 'FAQ', href: '/faq', description: 'Domande frequenti' },
         { name: 'Glossario', href: '/glossario', description: 'Termini e definizioni' },
       ]
     },
-    {
-      name: 'Chi siamo',
-      items: [
-        { name: 'La nostra storia', href: '/chi-siamo', description: 'Scopri il progetto' },
-        { name: 'Galleria', href: '/galleria', description: 'Le nostre attività in foto' },
-        { name: 'Contatti', href: '/contatti', description: 'Scrivici o chiamaci' },
-      ]
-    },
+    { name: 'Chi siamo', href: '/chi-siamo' },
+    { name: 'FAQ', href: '/faq' },
   ];
   
   const isActive = (path: string) => location.pathname === path;

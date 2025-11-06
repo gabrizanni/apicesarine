@@ -21,6 +21,18 @@ const MobileNav = ({ navigation }: MobileNavProps) => {
   const [openItems, setOpenItems] = useState<string[]>([]);
   
   const isActive = (path: string) => location.pathname === path;
+  
+  // Auto-open Risorse if current page is a child
+  React.useEffect(() => {
+    const risorseItem = navigation.find(item => item.name === 'Risorse');
+    if (risorseItem && 'items' in risorseItem && risorseItem.items) {
+      const isRisorseChild = risorseItem.items.some(subItem => isActive(subItem.href));
+      if (isRisorseChild && !openItems.includes('Risorse')) {
+        setOpenItems(prev => [...prev, 'Risorse']);
+      }
+    }
+  }, [location.pathname]);
+  
   const toggleItem = (name: string) => {
     setOpenItems(prev => 
       prev.includes(name) ? prev.filter(i => i !== name) : [...prev, name]
@@ -88,6 +100,7 @@ const MobileNav = ({ navigation }: MobileNavProps) => {
                             : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
                         )}
                         aria-current={isActive(subItem.href) ? "page" : undefined}
+                        tabIndex={openItems.includes(item.name) ? 0 : -1}
                       >
                         {subItem.name}
                       </Link>
