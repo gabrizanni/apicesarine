@@ -40,7 +40,22 @@ const Header = () => {
   ];
   
   const isActive = (path: string) => location.pathname === path;
-  const isInDropdown = (items: any[]) => items.some(item => isActive(item.href));
+  
+  // Check if any dropdown item is active, excluding exact matches on other top-level items
+  const isInDropdown = (items: any[]) => {
+    return items.some(item => isActive(item.href));
+  };
+  
+  // Check if a top-level item should be highlighted
+  const shouldHighlight = (item: any) => {
+    if ('items' in item) {
+      // For dropdowns, highlight if any child is active
+      return isInDropdown(item.items);
+    } else {
+      // For regular links, only highlight if exact match
+      return isActive(item.href);
+    }
+  };
   return (
     <>
       {/* Skip to main content link */}
@@ -69,7 +84,7 @@ const Header = () => {
                         <NavigationMenuTrigger 
                           className={cn(
                             "text-sm font-medium transition-smooth",
-                            isInDropdown(item.items) && "text-primary bg-accent"
+                            shouldHighlight(item) && "text-primary bg-accent"
                           )}
                         >
                           {item.name}
@@ -104,7 +119,7 @@ const Header = () => {
                         className={cn(
                           navigationMenuTriggerStyle(),
                           "text-sm font-medium transition-smooth",
-                          isActive(item.href) 
+                          shouldHighlight(item)
                             ? "text-primary bg-accent" 
                             : "text-muted-foreground hover:bg-accent/50"
                         )}
