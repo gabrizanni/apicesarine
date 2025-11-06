@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Download, Lock, Unlock } from 'lucide-react';
+import { Plus, Edit, Trash2, Download, Lock, Unlock, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/custom-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +12,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useMaterials, Material } from '@/hooks/useMaterials';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
+
+const AGE_GROUPS = [
+  '3-5 anni',
+  '6-10 anni',
+  '11-13 anni',
+  '14-18 anni',
+  'Adulti',
+  'Tutte le età'
+];
 
 const MaterialManager = () => {
   const { materials, loading, refetch } = useMaterials();
@@ -39,10 +49,14 @@ const MaterialManager = () => {
     description: '',
     file_type: '',
     file_size: '',
+    file_url: '',
     tags: '',
-    target_age_group: '',
+    target_age_group: [] as string[],
     is_premium: false
   });
+
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const resetForm = () => {
     setFormData({
@@ -50,21 +64,106 @@ const MaterialManager = () => {
       description: '',
       file_type: '',
       file_size: '',
+      file_url: '',
       tags: '',
-      target_age_group: '',
+      target_age_group: [],
       is_premium: false
     });
+    setUploadedFile(null);
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Determine file type from extension
+    const extension = file.name.split('.').pop()?.toUpperCase() || '';
+    let fileType = extension;
+    
+    if (['MP4', 'AVI', 'MOV', 'WMV', 'MKV'].includes(extension)) {
+      fileType = 'Video';
+    } else if (extension === 'PDF') {
+      fileType = 'PDF';
+    } else if (['ZIP', 'RAR', '7Z'].includes(extension)) {
+      fileType = 'ZIP';
+    }
+
+    setUploadedFile(file);
+    setFormData(prev => ({
+      ...prev,
+      file_type: fileType,
+      file_size: formatFileSize(file.size)
+    }));
+  };
+
+  const uploadFile = async (): Promise<string | null> => {
+    if (!uploadedFile) return formData.file_url || null;
+
+    try {
+      setUploading(true);
+      const fileExt = uploadedFile.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError, data } = await supabase.storage
+        .from('materials')
+        .upload(filePath, uploadedFile);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('materials')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      toast({
+        title: "Errore",
+        description: "Errore durante il caricamento del file",
+        variant: "destructive",
+      });
+      return null;
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!uploadedFile && !editingMaterial) {
+      toast({
+        title: "Errore",
+        description: "Devi caricare un file",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
+      const fileUrl = await uploadFile();
+      if (!fileUrl && !editingMaterial) return;
+
       const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(Boolean);
       
       const materialData = {
-        ...formData,
-        tags: JSON.stringify(tagsArray)
+        title: formData.title,
+        description: formData.description,
+        file_type: formData.file_type,
+        file_size: formData.file_size,
+        file_url: fileUrl || formData.file_url,
+        tags: tagsArray,
+        target_age_group: formData.target_age_group.join(', '),
+        is_premium: formData.is_premium
       };
 
       if (editingMaterial) {
@@ -99,13 +198,18 @@ const MaterialManager = () => {
   };
 
   const handleEdit = (material: Material) => {
+    const ageGroups = material.target_age_group 
+      ? material.target_age_group.split(',').map(g => g.trim())
+      : [];
+    
     setFormData({
       title: material.title,
       description: material.description || '',
       file_type: material.file_type,
       file_size: material.file_size || '',
+      file_url: material.file_url || '',
       tags: material.tags.join(', '),
-      target_age_group: material.target_age_group || '',
+      target_age_group: ageGroups,
       is_premium: material.is_premium
     });
     setEditingMaterial(material);
@@ -116,12 +220,27 @@ const MaterialManager = () => {
     if (!confirm('Sei sicuro di voler eliminare questo materiale?')) return;
 
     try {
+      // Find the material to get its file URL
+      const material = materials.find(m => m.id === materialId);
+      
+      // Delete from database
       const { error } = await supabase
         .from('materials')
         .delete()
         .eq('id', materialId);
 
       if (error) throw error;
+
+      // Delete file from storage if exists
+      if (material?.file_url) {
+        const fileName = material.file_url.split('/').pop();
+        if (fileName) {
+          await supabase.storage
+            .from('materials')
+            .remove([fileName]);
+        }
+      }
+
       toast({ title: "Materiale eliminato con successo" });
       refetch();
     } catch (error) {
@@ -132,6 +251,15 @@ const MaterialManager = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const toggleAgeGroup = (ageGroup: string) => {
+    setFormData(prev => ({
+      ...prev,
+      target_age_group: prev.target_age_group.includes(ageGroup)
+        ? prev.target_age_group.filter(g => g !== ageGroup)
+        : [...prev.target_age_group, ageGroup]
+    }));
   };
 
   const handleAddAccessCode = async () => {
@@ -210,30 +338,14 @@ const MaterialManager = () => {
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="title">Titolo</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="file_type">Tipo File</Label>
-                  <Select value={formData.file_type} onValueChange={(value) => setFormData(prev => ({...prev, file_type: value}))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleziona tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="PDF">PDF</SelectItem>
-                      <SelectItem value="Video">Video</SelectItem>
-                      <SelectItem value="ZIP">ZIP</SelectItem>
-                      <SelectItem value="Software">Software</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div>
+                <Label htmlFor="title">Titolo</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
+                  required
+                />
               </div>
 
               <div>
@@ -246,24 +358,77 @@ const MaterialManager = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="file_size">Dimensione File</Label>
-                  <Input
-                    id="file_size"
-                    placeholder="es. 2.1 MB"
-                    value={formData.file_size}
-                    onChange={(e) => setFormData(prev => ({...prev, file_size: e.target.value}))}
-                  />
+              <div>
+                <Label htmlFor="file">Carica File (PDF, Video, ZIP)</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="file"
+                      type="file"
+                      accept=".pdf,.mp4,.avi,.mov,.wmv,.mkv,.zip,.rar,.7z"
+                      onChange={handleFileChange}
+                      disabled={uploading}
+                      className="flex-1"
+                    />
+                    {uploadedFile && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setUploadedFile(null);
+                          setFormData(prev => ({ ...prev, file_type: '', file_size: '' }));
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  {uploadedFile && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Upload className="h-4 w-4" />
+                      <span>{uploadedFile.name}</span>
+                      <Badge variant="outline">{formData.file_size}</Badge>
+                      <Badge>{formData.file_type}</Badge>
+                    </div>
+                  )}
+                  {editingMaterial && !uploadedFile && formData.file_url && (
+                    <div className="text-sm text-muted-foreground">
+                      File attuale: {formData.file_type} • {formData.file_size}
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <Label htmlFor="target_age_group">Fascia d'età</Label>
-                  <Input
-                    id="target_age_group"
-                    placeholder="es. 6-11 anni"
-                    value={formData.target_age_group}
-                    onChange={(e) => setFormData(prev => ({...prev, target_age_group: e.target.value}))}
-                  />
+              </div>
+
+              <div>
+                <Label>Fascia d'età (selezione multipla)</Label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {AGE_GROUPS.map((ageGroup) => (
+                    <div
+                      key={ageGroup}
+                      onClick={() => toggleAgeGroup(ageGroup)}
+                      className={cn(
+                        "flex items-center space-x-2 p-2 rounded-md border cursor-pointer transition-smooth",
+                        formData.target_age_group.includes(ageGroup)
+                          ? "bg-primary/10 border-primary"
+                          : "bg-background hover:bg-accent"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-4 h-4 rounded border flex items-center justify-center",
+                        formData.target_age_group.includes(ageGroup)
+                          ? "bg-primary border-primary"
+                          : "border-muted-foreground"
+                      )}>
+                        {formData.target_age_group.includes(ageGroup) && (
+                          <svg className="w-3 h-3 text-primary-foreground" fill="currentColor" viewBox="0 0 12 12">
+                            <path d="M10 3L4.5 8.5L2 6" stroke="currentColor" strokeWidth="2" fill="none" />
+                          </svg>
+                        )}
+                      </div>
+                      <span className="text-sm">{ageGroup}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -290,8 +455,8 @@ const MaterialManager = () => {
                 <Button type="button" variant="outline" onClick={() => setIsAddingMaterial(false)}>
                   Annulla
                 </Button>
-                <Button type="submit">
-                  {editingMaterial ? 'Aggiorna' : 'Aggiungi'}
+                <Button type="submit" disabled={uploading}>
+                  {uploading ? 'Caricamento...' : editingMaterial ? 'Aggiorna' : 'Aggiungi'}
                 </Button>
               </div>
             </form>
@@ -328,10 +493,25 @@ const MaterialManager = () => {
                   <span className="text-sm text-muted-foreground">
                     {material.file_type} • {material.file_size}
                   </span>
+                  {material.target_age_group && (
+                    <span className="text-sm text-muted-foreground">
+                      {material.target_age_group}
+                    </span>
+                  )}
                   <div className="flex items-center space-x-1">
                     <Download className="h-4 w-4" />
                     <span className="text-sm">{material.download_count}</span>
                   </div>
+                  {material.file_url && (
+                    <a 
+                      href={material.file_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline text-sm"
+                    >
+                      Scarica
+                    </a>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {material.tags.slice(0, 3).map((tag, index) => (
