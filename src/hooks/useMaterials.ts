@@ -53,18 +53,39 @@ export const useMaterials = () => {
 
   const downloadMaterial = async (materialId: string) => {
     try {
+      // Find the material to get the file URL
+      const material = materials.find(m => m.id === materialId);
+      
+      if (!material) {
+        throw new Error('Materiale non trovato');
+      }
+
+      if (!material.file_url) {
+        throw new Error('File non disponibile per il download');
+      }
+
+      // Increment download counter
       const { error } = await supabase.rpc('increment_download_count', {
         material_id: materialId
       });
 
       if (error) throw error;
 
+      // Trigger actual file download
+      const link = document.createElement('a');
+      link.href = material.file_url;
+      link.download = `${material.title}.${material.file_type.toLowerCase()}`;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
       // Update local state
       setMaterials(prev => 
-        prev.map(material => 
-          material.id === materialId 
-            ? { ...material, download_count: material.download_count + 1 }
-            : material
+        prev.map(mat => 
+          mat.id === materialId 
+            ? { ...mat, download_count: mat.download_count + 1 }
+            : mat
         )
       );
 
@@ -76,7 +97,7 @@ export const useMaterials = () => {
       console.error('Error tracking download:', error);
       toast({
         title: "Errore",
-        description: "Errore durante il download",
+        description: error instanceof Error ? error.message : "Errore durante il download",
         variant: "destructive",
       });
     }
