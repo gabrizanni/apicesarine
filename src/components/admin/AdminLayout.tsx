@@ -33,11 +33,11 @@ export const AdminLayout = ({ onLogout }: AdminLayoutProps) => {
         <main className="flex-1 overflow-auto">
           <div className="container mx-auto p-6">
             <Routes>
-              <Route path="/" element={<AdminDashboard />} />
-              <Route path="/prenotazioni" element={<BookingRequestsTable />} />
-              <Route path="/contenuti" element={<AdminContenuti />} />
-              <Route path="/media" element={<AdminMedia />} />
-              <Route path="/impostazioni" element={<AdminImpostazioni />} />
+              <Route index element={<AdminDashboard />} />
+              <Route path="prenotazioni" element={<BookingRequestsTable />} />
+              <Route path="contenuti" element={<AdminContenuti />} />
+              <Route path="media" element={<AdminMedia />} />
+              <Route path="impostazioni" element={<AdminImpostazioni />} />
             </Routes>
           </div>
         </main>
