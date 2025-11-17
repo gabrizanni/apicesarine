@@ -51,6 +51,16 @@ export const useMaterials = () => {
     }
   };
 
+  const getStoragePathFromUrl = (url: string): string | null => {
+    try {
+      const u = new URL(url);
+      const parts = u.pathname.split('/materials/');
+      return parts[1] || null;
+    } catch {
+      return null;
+    }
+  };
+
   const downloadMaterial = async (materialId: string) => {
     try {
       // Find the material to get the file URL
@@ -71,14 +81,51 @@ export const useMaterials = () => {
 
       if (error) throw error;
 
-      // Trigger actual file download
-      const link = document.createElement('a');
-      link.href = material.file_url;
-      link.download = `${material.title}.${material.file_type.toLowerCase()}`;
-      link.target = '_blank';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // Extract file path from URL
+      const filePath = getStoragePathFromUrl(material.file_url);
+      if (!filePath) {
+        throw new Error('Percorso file non valido');
+      }
+
+      // Helper to get file extension
+      const getExt = () => {
+        const name = filePath.split('/').pop() || '';
+        const ext = name.includes('.') ? name.split('.').pop()! : (material.file_type || '').toLowerCase();
+        return ext || 'file';
+      };
+
+      // Helper to trigger download
+      const triggerAnchorDownload = (href: string, isObjectUrl = false) => {
+        const a = document.createElement('a');
+        a.href = href;
+        a.download = `${material.title}.${getExt()}`;
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        if (isObjectUrl) URL.revokeObjectURL(href);
+      };
+
+      // Step A: Try to create a signed URL (preferred method)
+      const { data: signed, error: signErr } = await supabase.storage
+        .from('materials')
+        .createSignedUrl(filePath, 60);
+
+      if (!signErr && signed?.signedUrl) {
+        triggerAnchorDownload(signed.signedUrl);
+      } else {
+        // Step B: Fallback to Blob download
+        const { data: blob, error: dlErr } = await supabase.storage
+          .from('materials')
+          .download(filePath);
+        
+        if (dlErr || !blob) {
+          throw dlErr || new Error('Download fallito');
+        }
+        
+        const blobUrl = URL.createObjectURL(blob);
+        triggerAnchorDownload(blobUrl, true);
+      }
 
       // Update local state
       setMaterials(prev => 
