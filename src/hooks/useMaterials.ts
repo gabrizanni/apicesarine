@@ -106,26 +106,17 @@ export const useMaterials = () => {
         if (isObjectUrl) URL.revokeObjectURL(href);
       };
 
-      // Step A: Try to create a signed URL (preferred method)
-      const { data: signed, error: signErr } = await supabase.storage
+      // Download as Blob to force download instead of browser preview
+      const { data: blob, error: dlErr } = await supabase.storage
         .from('materials')
-        .createSignedUrl(filePath, 60);
-
-      if (!signErr && signed?.signedUrl) {
-        triggerAnchorDownload(signed.signedUrl);
-      } else {
-        // Step B: Fallback to Blob download
-        const { data: blob, error: dlErr } = await supabase.storage
-          .from('materials')
-          .download(filePath);
-        
-        if (dlErr || !blob) {
-          throw dlErr || new Error('Download fallito');
-        }
-        
-        const blobUrl = URL.createObjectURL(blob);
-        triggerAnchorDownload(blobUrl, true);
+        .download(filePath);
+      
+      if (dlErr || !blob) {
+        throw dlErr || new Error('Download fallito');
       }
+      
+      const blobUrl = URL.createObjectURL(blob);
+      triggerAnchorDownload(blobUrl, true);
 
       // Update local state
       setMaterials(prev => 
