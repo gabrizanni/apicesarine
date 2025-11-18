@@ -4,6 +4,12 @@ import { corsHeaders } from '../_shared/cors.ts';
 
 const ADMIN_PASS = Deno.env.get('ADMIN_PASS');
 
+// Helper for URL or path validation (accepts both full URLs and relative paths)
+const urlOrPath = z.string().max(500).refine(
+  (val) => !val || val.startsWith('/') || val.startsWith('http://') || val.startsWith('https://'),
+  { message: "Must be a valid URL or path" }
+).optional().nullable();
+
 // Input validation schemas
 const educatorSchema = z.object({
   name: z.string().min(1).max(200),
@@ -12,8 +18,8 @@ const educatorSchema = z.object({
   email: z.string().email().max(255).optional().nullable(),
   phone: z.string().max(50).optional().nullable(),
   specialization: z.string().max(200).optional().nullable(),
-  avatar_url: z.string().url().max(500).optional().nullable(),
-  cover_image_url: z.string().url().max(500).optional().nullable(),
+  avatar_url: urlOrPath,
+  cover_image_url: urlOrPath,
   cover_image_alt: z.string().max(200).optional().nullable(),
   available_days: z.array(z.string()).optional(),
   available_regions: z.array(z.string()).optional(),
@@ -30,7 +36,7 @@ const workshopSchema = z.object({
   duration_minutes: z.number().int().positive().max(600).optional().nullable(),
   max_participants: z.number().int().positive().max(1000).optional().nullable(),
   price: z.number().nonnegative().max(10000).optional().nullable(),
-  cover_image_url: z.string().url().max(500).optional().nullable(),
+  cover_image_url: urlOrPath,
   cover_image_alt: z.string().max(200).optional().nullable(),
   is_active: z.boolean().optional(),
   is_demo: z.boolean().optional(),
@@ -42,7 +48,7 @@ const postSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/).max(100),
   excerpt: z.string().max(500).optional().nullable(),
   content: z.string().max(50000).optional().nullable(),
-  featured_image_url: z.string().url().max(500).optional().nullable(),
+  featured_image_url: urlOrPath,
   featured_image_alt: z.string().max(200).optional().nullable(),
   status: z.enum(['draft', 'published']).optional(),
   published_at: z.string().optional().nullable(),
@@ -63,7 +69,7 @@ const faqSchema = z.object({
 const galleryItemSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().max(1000).optional().nullable(),
-  image_url: z.string().url().max(500),
+  image_url: urlOrPath.refine((val) => val !== null && val !== undefined, { message: "Image URL is required" }),
   image_alt: z.string().max(200).optional().nullable(),
   category: z.string().max(100).optional().nullable(),
   display_order: z.number().int().nonnegative().max(1000).optional(),
@@ -75,7 +81,7 @@ const galleryItemSchema = z.object({
 const partnerSchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().max(1000).optional().nullable(),
-  logo_url: z.string().url().max(500).optional().nullable(),
+  logo_url: urlOrPath,
   website_url: z.string().url().max(500).optional().nullable(),
   display_order: z.number().int().nonnegative().max(1000).optional(),
   is_active: z.boolean().optional(),
@@ -86,7 +92,7 @@ const partnerSchema = z.object({
 const materialSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().max(2000).optional().nullable(),
-  file_url: z.string().url().max(500).optional().nullable(),
+  file_url: urlOrPath,
   file_type: z.string().max(50),
   file_size: z.string().max(50).optional().nullable(),
   tags: z.array(z.string()).optional(),
