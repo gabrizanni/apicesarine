@@ -10,13 +10,30 @@ interface AdminLayoutProps {
 
 import { ContentManagement } from './ContentManagement';
 import { AdminSettings } from './AdminSettings';
+import { GalleryManager } from './GalleryManager';
+import MaterialManager from './MaterialManager';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const AdminContenuti = () => <ContentManagement />;
 
 const AdminMedia = () => (
   <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Media</h2>
-    <p className="text-muted-foreground">Gestione materiali e galleria disponibili nella sezione Contenuti.</p>
+    <h2 className="text-2xl font-bold mb-6">Media</h2>
+    
+    <Tabs defaultValue="gallery" className="w-full">
+      <TabsList className="grid w-full grid-cols-2 mb-6">
+        <TabsTrigger value="gallery">Galleria</TabsTrigger>
+        <TabsTrigger value="materials">Materiali</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="gallery">
+        <GalleryManager />
+      </TabsContent>
+
+      <TabsContent value="materials">
+        <MaterialManager />
+      </TabsContent>
+    </Tabs>
   </div>
 );
 
