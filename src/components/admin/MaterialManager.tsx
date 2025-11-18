@@ -331,13 +331,13 @@ const MaterialManager = () => {
               Aggiungi Materiale
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
             <DialogHeader>
               <DialogTitle>
                 {editingMaterial ? 'Modifica Materiale' : 'Aggiungi Nuovo Materiale'}
               </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto pr-2">
               <div>
                 <Label htmlFor="title">Titolo</Label>
                 <Input
