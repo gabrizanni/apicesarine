@@ -485,8 +485,9 @@ const MaterialManager = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
+              <div className="space-y-3">
+                {/* Prima riga: Badge premium, tipo file e fascia età */}
+                <div className="flex items-center gap-3 flex-wrap">
                   <Badge variant={material.is_premium ? "default" : "secondary"}>
                     {material.is_premium ? 'Premium' : 'Gratuito'}
                   </Badge>
@@ -498,27 +499,42 @@ const MaterialManager = () => {
                       {material.target_age_group}
                     </span>
                   )}
-                  <div className="flex items-center space-x-1">
-                    <Download className="h-4 w-4" />
-                    <span className="text-sm">{material.download_count}</span>
-                  </div>
-                  {material.file_url && (
-                    <a 
-                      href={material.file_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline text-sm"
-                    >
-                      Scarica
-                    </a>
-                  )}
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  {material.tags.slice(0, 3).map((tag, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
+                
+                {/* Seconda riga: Download count, link scarica e tag */}
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Download className="h-4 w-4" />
+                      <span className="text-sm">{material.download_count} download</span>
+                    </div>
+                    {material.file_url && (
+                      <a 
+                        href={material.file_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline text-sm font-medium inline-flex items-center gap-1"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        Scarica
+                      </a>
+                    )}
+                  </div>
+                  
+                  {material.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 justify-end">
+                      {material.tags.slice(0, 3).map((tag, index) => (
+                        <Badge key={index} variant="outline" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                      {material.tags.length > 3 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{material.tags.length - 3}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>
