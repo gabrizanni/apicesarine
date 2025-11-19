@@ -1,238 +1,82 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import SEOHead from '@/components/common/SEOHead';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/custom-button';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Calendar, ArrowRight, Search } from 'lucide-react';
+import { getPosts } from '@/lib/data/posts';
 
-const Storie = () => {
-  const posts = [
-    {
-      id: 1,
-      title: "Come le api stanno salvando la biodiversità urbana",
-      excerpt: "Scopriamo il ruolo fondamentale degli impollinatori nelle città e come i progetti di apicoltura urbana stanno creando corridoi ecologici.",
-      author: "Maria Francesca Rossi",
-      date: "2024-03-15",
-      tags: ["Biodiversità", "Città", "Sostenibilità"],
-      category: "Ambiente",
-      readTime: "5 min"
-    },
-    {
-      id: 2,
-      title: "Il successo del laboratorio alla scuola di Modena",
-      excerpt: "Un racconto dall'interno: come 120 bambini della scuola primaria hanno scoperto il mondo delle api e sviluppato una nuova coscienza ambientale.",
-      author: "Giuseppe Bianchi",
-      date: "2024-03-08",
-      tags: ["Scuola", "Laboratorio", "Primaria"],
-      category: "Educazione",
-      readTime: "7 min"
-    },
-    {
-      id: 3,
-      title: "STEM education: le api come ponte tra scienza e natura",
-      excerpt: "Analisiamo come l'uso delle api nei laboratori didattici promuova competenze STEM in modo naturale e coinvolgente.",
-      author: "Anna Verdi",
-      date: "2024-02-28",
-      tags: ["STEM", "Metodologia", "Innovazione"],
-      category: "Didattica",
-      readTime: "6 min"
-    },
-    {
-      id: 4,
-      title: "I cambiamenti climatici spiegati ai bambini",
-      excerpt: "Strategie e metodologie per affrontare temi complessi come il climate change attraverso l'osservazione del comportamento delle api.",
-      author: "Maria Francesca Rossi",
-      date: "2024-02-20",
-      tags: ["Clima", "Educazione", "Comunicazione"],
-      category: "Ambiente",
-      readTime: "8 min"
-    },
-    {
-      id: 5,
-      title: "Api e arte: quando la creatività incontra la scienza",
-      excerpt: "Progetti interdisciplinari che uniscono osservazione scientifica e espressione artistica per un apprendimento completo e coinvolgente.",
-      author: "Giuseppe Bianchi",
-      date: "2024-02-12",
-      tags: ["Arte", "Interdisciplinarità", "Creatività"],
-      category: "Didattica", 
-      readTime: "4 min"
-    },
-    {
-      id: 6,
-      title: "L'importanza degli impollinatori per l'agricoltura italiana",
-      excerpt: "Dati e prospettive sul ruolo economico ed ecologico delle api nell'agroalimentare nazionale, con focus sulle specificità regionali.",
-      author: "Anna Verdi",
-      date: "2024-02-05",
-      tags: ["Agricoltura", "Economia", "Italia"],
-      category: "Ambiente",
-      readTime: "9 min"
-    }
-  ];
+export default function Storie() {
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const categories = ["Tutti", "Ambiente", "Educazione", "Didattica"];
-  const [selectedCategory, setSelectedCategory] = React.useState("Tutti");
-  const [searchTerm, setSearchTerm] = React.useState("");
+  useEffect(() => {
+    const loadPosts = async () => {
+      try {
+        setLoading(true);
+        const data = await getPosts(true);
+        setPosts(data);
+      } catch (err) {
+        console.error('Error loading posts:', err);
+        setError('Impossibile caricare le storie.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadPosts();
+  }, []);
 
   const filteredPosts = posts.filter(post => {
-    const matchesCategory = selectedCategory === "Tutti" || post.category === selectedCategory;
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesCategory && matchesSearch;
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return post.title.toLowerCase().includes(q) || post.excerpt?.toLowerCase().includes(q);
   });
 
   return (
     <Layout>
-      {/* Header */}
-      <section className="bg-gradient-hero py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl lg:text-5xl font-bold text-slate mb-4">
-              Storie e Novità
-            </h1>
-            <p className="text-xl text-slate/80 max-w-3xl mx-auto">
-              Racconti dal mondo dell'educazione ambientale, aggiornamenti scientifici 
-              e riflessioni sul rapporto tra natura e apprendimento.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Filters and Search */}
-      <section className="py-8 bg-background border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Categories */}
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-smooth ${
-                    selectedCategory === category
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground hover:bg-accent'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-
-            {/* Search */}
-            <div className="w-full md:w-80">
-              <input
-                type="text"
-                placeholder="Cerca articoli, tag..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-input rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              />
+      <SEOHead title="Storie e Approfondimenti - Blog Educazione Ambientale" description="Leggi le storie dei nostri laboratori e approfondimenti scientifici sulle api." keywords="blog api educazione, storie laboratori" />
+      <div className="min-h-screen bg-background">
+        <section className="py-16 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center space-y-4">
+              <Badge variant="outline">Blog & Storie</Badge>
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Storie di Api e Biodiversità</h1>
+              <p className="text-xl text-muted-foreground">Racconti, approfondimenti scientifici e riflessioni</p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Articles Grid */}
-      <section className="py-16 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {filteredPosts.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Nessun articolo trovato per i criteri selezionati.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredPosts.map((post) => (
-                <Card key={post.id} className="shadow-card border-0 overflow-hidden hover:shadow-lg transition-smooth group cursor-pointer">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <Badge variant="secondary" className="text-xs">
-                        {post.category}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {post.readTime}
-                      </span>
-                    </div>
-                    
-                    <CardTitle className="text-lg leading-tight group-hover:text-primary transition-smooth">
-                      {post.title}
-                    </CardTitle>
-                  </CardHeader>
-
-                  <CardContent className="space-y-4">
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {post.excerpt}
-                    </p>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1">
-                      {post.tags.map((tag, idx) => (
-                        <span
-                          key={idx}
-                          className="inline-block px-2 py-1 bg-honey/10 text-honey-light border border-honey/20 rounded-lg text-xs"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Meta */}
-                    <div className="flex items-center justify-between text-xs text-muted-foreground pt-4 border-t border-border">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-1">
-                          <User className="h-3 w-3" />
-                          <span>{post.author}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="h-3 w-3" />
-                          <span>{new Date(post.date).toLocaleDateString('it-IT')}</span>
-                        </div>
-                      </div>
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-smooth" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-
-          {/* Load More */}
-          {filteredPosts.length > 0 && (
-            <div className="text-center mt-12">
-              <Button variant="outline" size="lg">
-                Carica altri articoli
-              </Button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Newsletter CTA */}
-      <section className="py-16 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center bg-gradient-hero rounded-3xl p-12">
-            <h2 className="text-2xl font-bold text-slate mb-4">
-              Non perderti le nostre novità
-            </h2>
-            <p className="text-slate/80 mb-6 max-w-2xl mx-auto">
-              Iscriviti alla newsletter per ricevere aggiornamenti sui nuovi laboratori, 
-              materiali didattici e storie dal mondo dell'educazione ambientale.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="La tua email"
-                className="flex-1 px-4 py-3 border border-slate/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-honey"
-              />
-              <Button variant="nature" size="lg">
-                Iscriviti
-              </Button>
+        </section>
+        <section className="py-8 border-b bg-muted/30">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Input type="text" placeholder="Cerca..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 h-12" />
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+        <section className="py-12">
+          <div className="container mx-auto px-4">
+            {loading ? <div className="text-center py-12"><p className="text-muted-foreground">Caricamento...</p></div> : error ? <div className="text-center py-12"><p className="text-destructive">{error}</p></div> : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                {filteredPosts.map((post) => (
+                  <Card key={post.id} className="group hover:shadow-xl transition-all flex flex-col h-full">
+                    {post.featured_image_url && <div className="relative aspect-video overflow-hidden bg-muted"><img src={post.featured_image_url} alt={post.featured_image_alt || post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /></div>}
+                    <CardHeader className="flex-1">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3"><Calendar className="w-4 h-4" /><time>{new Date(post.published_at).toLocaleDateString('it-IT')}</time></div>
+                      <CardTitle className="text-xl group-hover:text-primary transition-colors line-clamp-2">{post.title}</CardTitle>
+                      {post.excerpt && <CardDescription className="line-clamp-3">{post.excerpt}</CardDescription>}
+                    </CardHeader>
+                    <CardFooter><Button variant="ghost" className="w-full" asChild><a href={`/storie/${post.slug}`}>Leggi l'articolo<ArrowRight className="w-4 h-4 ml-2" /></a></Button></CardFooter>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
     </Layout>
   );
-};
-
-export default Storie;
+}

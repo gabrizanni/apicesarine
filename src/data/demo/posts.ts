@@ -2,6 +2,57 @@ import { DemoPost } from './types';
 
 export const demoPosts: DemoPost[] = [
   {
+    slug: 'api-salvano-biodiversita-urbana',
+    title: 'Come le api salvano la biodiversità urbana',
+    excerpt: 'Le api urbane stanno diventando sempre più importanti per mantenere la biodiversità nelle nostre città.',
+    content: `Le api urbane stanno diventando sempre più importanti per mantenere la biodiversità nelle nostre città. Scopri come questi piccoli impollinatori contribuiscono a rendere le aree urbane più verdi e vivibili.
+
+## Il ruolo delle api in città
+
+Le api urbane non solo producono miele, ma svolgono un ruolo cruciale nell'impollinazione di piante ornamentali, orti urbani e parchi cittadini. La loro presenza favorisce la crescita di una vegetazione più diversificata e resiliente.
+
+## Benefici per l'ambiente urbano
+
+- Miglioramento della qualità dell'aria
+- Aumento della biodiversità vegetale
+- Creazione di corridoi ecologici
+- Sensibilizzazione ambientale dei cittadini
+
+## Come supportare le api in città
+
+Anche nelle città possiamo fare molto per aiutare le api: piantare fiori sui balconi, creare piccoli "bee hotel", evitare pesticidi nei giardini condominiali e sostenere progetti di apicoltura urbana.`,
+    featured_image_url: '/placeholder.svg',
+    featured_image_alt: 'Api su fiori in un contesto urbano',
+    status: 'published',
+    published_at: '2024-03-20T09:00:00Z'
+  },
+  {
+    slug: 'educazione-ambientale-scuole',
+    title: 'L\'educazione ambientale nelle scuole del futuro',
+    excerpt: 'Scopri come i laboratori sulle api stanno trasformando l\'educazione ambientale nelle scuole italiane.',
+    content: `L'educazione ambientale non è più solo teoria: attraverso esperienze pratiche come i laboratori sulle api, gli studenti sviluppano una vera coscienza ecologica.
+
+## Apprendimento esperienziale
+
+I bambini imparano meglio quando possono toccare, osservare e sperimentare direttamente. I nostri laboratori offrono esattamente questo: un'esperienza multisensoriale che resta impressa nella memoria.
+
+## Competenze del XXI secolo
+
+Oltre alle conoscenze scientifiche, i laboratori sviluppano:
+- Pensiero critico
+- Collaborazione
+- Problem solving
+- Cittadinanza attiva
+
+## Risultati concreti
+
+Le scuole che hanno integrato i nostri percorsi riportano un aumento significativo dell'interesse per le materie STEM e una maggiore consapevolezza ambientale tra gli studenti.`,
+    featured_image_url: '/placeholder.svg',
+    featured_image_alt: 'Studenti durante un laboratorio ambientale',
+    status: 'published',
+    published_at: '2024-03-18T11:30:00Z'
+  },
+  {
     slug: 'importanza-api-ecosistema',
     title: 'L\'importanza delle api per l\'ecosistema',
     excerpt: 'Scopri perché le api sono fondamentali per la biodiversità e la nostra alimentazione.',
@@ -50,5 +101,58 @@ Ognuno di noi può contribuire:
     featured_image_alt: 'Bambini durante laboratorio scientifico',
     status: 'published',
     published_at: '2024-03-10T14:30:00Z'
+  },
+  {
+    slug: 'cambiamenti-climatici-impollinatori',
+    title: 'Cambiamenti climatici e impollinatori: una sfida urgente',
+    excerpt: 'Il riscaldamento globale sta mettendo a rischio le popolazioni di api e altri impollinatori. Cosa possiamo fare?',
+    content: `I cambiamenti climatici stanno alterando profondamente gli ecosistemi e le api sono tra le specie più vulnerabili a questi cambiamenti.
+
+## Gli effetti del clima sulle api
+
+Temperature più elevate, eventi meteorologici estremi e alterazione dei cicli di fioritura stanno creando difficoltà crescenti per gli impollinatori.
+
+## Il ruolo della scienza
+
+La ricerca scientifica sta documentando questi cambiamenti e cercando soluzioni innovative per proteggere le api. I nostri laboratori includono anche questi temi di attualità.
+
+## Azione collettiva
+
+Ogni piccolo gesto conta: dalla creazione di habitat favorevoli alla riduzione delle emissioni, possiamo tutti contribuire a proteggere questi preziosi alleati della natura.`,
+    featured_image_url: '/placeholder.svg',
+    featured_image_alt: 'Effetti del clima sugli impollinatori',
+    status: 'published',
+    published_at: '2024-03-05T16:00:00Z'
+  },
+  {
+    slug: 'costruire-hotel-insetti-scuola',
+    title: 'Come costruire un hotel per insetti a scuola',
+    excerpt: 'Guida pratica per realizzare con gli studenti un rifugio per api solitarie e altri impollinatori.',
+    content: `Costruire un hotel per insetti è un'attività educativa perfetta: unisce manualità, scienza e impegno ambientale concreto.
+
+## Materiali necessari
+
+- Cassette di legno o pallet
+- Canne di bambù
+- Pigne
+- Corteccia
+- Mattoni forati
+- Paglia
+
+## Procedimento passo-passo
+
+1. Creare la struttura portante
+2. Riempire gli scomparti con materiali diversi
+3. Orientare verso sud-est
+4. Installare in posizione riparata
+5. Osservare e documentare gli "inquilini"
+
+## Valore educativo
+
+Gli studenti apprendono le esigenze degli impollinatori, sviluppano competenze manuali e scientifiche, e contribuiscono concretamente alla biodiversità del loro territorio.`,
+    featured_image_url: '/placeholder.svg',
+    featured_image_alt: 'Hotel per insetti costruito da studenti',
+    status: 'published',
+    published_at: '2024-02-28T10:00:00Z'
   }
 ];
