@@ -1,265 +1,223 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Clock, Users, Euro, Download, ArrowRight, Target } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import SEOHead from '@/components/common/SEOHead';
-import { Button } from '@/components/ui/custom-button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { pageSEO, generateCourseStructuredData } from '@/utils/seo';
+import { Clock, Users, Euro, GraduationCap, Leaf, Beaker, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { getWorkshops } from '@/lib/data/workshops';
 
-const Laboratori = () => {
-  const workshops = [
-    {
-      id: 1,
-      title: "Piccoli Impollinatori",
-      slug: "piccoli-impollinatori",
-      audience: "Scuola dell'Infanzia",
-      ageRange: "3-6 anni",
-      duration: 60,
-      maxStudents: 25,
-      priceFrom: 150,
-      season: ["Primavera", "Estate", "Autunno"],
-      spaceNeeds: "Aula ampia con tavoli, presa elettrica",
-      objectives: [
-        "Sviluppare la curiosità verso il mondo naturale",
-        "Stimolare l'uso dei cinque sensi",
-        "Promuovere il rispetto per gli insetti utili",
-        "Introdurre concetti di collaborazione"
-      ],
-      description: "Un viaggio sensoriale nel mondo delle api pensato per i più piccoli. I bambini esploreranno colori, profumi e forme del mondo dell'alveare attraverso attività ludiche e interattive.",
-      activities: ["Osservazione di miele e cera", "Giochi di imitazione", "Costruzione di fiori di carta", "Assaggio di mieli diversi"],
-      color: "honey"
-    },
-    {
-      id: 2,
-      title: "Api & Scienza",
-      slug: "api-scienza",
-      audience: "Scuola Primaria",
-      ageRange: "6-11 anni",
-      duration: 90,
-      maxStudents: 25,
-      priceFrom: 180,
-      season: ["Tutto l'anno"],
-      spaceNeeds: "Aula con LIM/proiettore, tavoli per gruppi",
-      objectives: [
-        "Comprendere il processo di impollinazione",
-        "Osservare il ciclo di vita delle api",
-        "Applicare il metodo scientifico",
-        "Sviluppare competenze STEM"
-      ],
-      description: "Esperimenti pratici e osservazioni scientifiche per comprendere il ruolo fondamentale delle api nell'ecosistema. I bambini diventeranno piccoli scienziati esploratori.",
-      activities: ["Esperimenti su impollinazione", "Osservazione al microscopio", "Costruzione di modellini", "Analisi di pollini"],
-      color: "forest"
-    },
-    {
-      id: 3,
-      title: "Ecosistemi e Sostenibilità",
-      slug: "ecosistemi-sostenibilita", 
-      audience: "Scuola Secondaria I grado",
-      ageRange: "11-14 anni",
-      duration: 120,
-      maxStudents: 25,
-      priceFrom: 220,
-      season: ["Tutto l'anno"],
-      spaceNeeds: "Aula informatica o con dispositivi, spazio per dibattiti",
-      objectives: [
-        "Analizzare le reti alimentari e la biodiversità",
-        "Valutare l'impatto dei cambiamenti climatici",
-        "Sviluppare pensiero critico ambientale",
-        "Promuovere cittadinanza attiva"
-      ],
-      description: "Un'analisi approfondita degli ecosistemi e delle sfide ambientali attuali. I ragazzi svilupperanno una coscienza ecologica e competenze di cittadinanza attiva.",
-      activities: ["Debate su sostenibilità", "Analisi dati ambientali", "Progettazione giardini per api", "Simulazioni ecosistemiche"],
-      color: "slate"
-    }
-  ];
+// Extra info per arricchire i workshop dal DB
+const extraInfoBySlug: Record<string, {
+  audience: string;
+  ageRange: string;
+  season: string;
+  location: string;
+  icon: any;
+  color: string;
+}> = {
+  'piccoli-impollinatori': {
+    audience: 'Scuola dell\'Infanzia',
+    ageRange: '3-6 anni',
+    season: 'Tutto l\'anno',
+    location: 'A scuola o presso il nostro centro',
+    icon: GraduationCap,
+    color: 'from-amber-400 to-orange-500'
+  },
+  'api-e-scienza': {
+    audience: 'Scuola Primaria',
+    ageRange: '6-11 anni',
+    season: 'Ottobre-Maggio',
+    location: 'A scuola o presso il nostro centro',
+    icon: Beaker,
+    color: 'from-blue-400 to-cyan-500'
+  },
+  'ecosistemi-sostenibilita': {
+    audience: 'Scuola Secondaria',
+    ageRange: '11-14 anni',
+    season: 'Tutto l\'anno',
+    location: 'A scuola o presso il nostro centro',
+    icon: Leaf,
+    color: 'from-green-400 to-emerald-500'
+  },
+  'hotel-per-insetti': {
+    audience: 'Scuola Primaria e Secondaria',
+    ageRange: '8-14 anni',
+    season: 'Primavera-Estate',
+    location: 'A scuola con spazio esterno',
+    icon: GraduationCap,
+    color: 'from-purple-400 to-pink-500'
+  }
+};
 
-  const seoData = {
-    ...pageSEO.laboratori,
-    canonical: "https://api-famiglia.lovable.app/laboratori",
-    structuredData: {
-      "@context": "https://schema.org",
-      "@type": ["ItemList", "EducationalOrganization"],
-      "name": "Laboratori Educativi sulle Api",
-      "description": "Programmi educativi progettati specificamente per ogni fascia d'età",
-      "itemListElement": workshops.map((workshop, index) => ({
-        "@type": "ListItem",
-        "position": index + 1,
-        "item": generateCourseStructuredData(workshop)
-      }))
-    }
-  };
+export default function Laboratori() {
+  const [workshops, setWorkshops] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadWorkshops = async () => {
+      try {
+        setLoading(true);
+        const data = await getWorkshops();
+        setWorkshops(data);
+      } catch (err) {
+        console.error('Error loading workshops:', err);
+        setError('Impossibile caricare i laboratori. Riprova più tardi.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadWorkshops();
+  }, []);
 
   return (
     <Layout>
-      <SEOHead {...seoData} />
-      {/* Header */}
-      <section className="bg-gradient-hero py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl lg:text-5xl font-bold text-slate mb-4">
-              I nostri laboratori
-            </h1>
-            <p className="text-xl text-slate/80 max-w-3xl mx-auto">
-              Programmi educativi progettati specificamente per ogni fascia d'età, 
-              con contenuti scientificamente accurati e metodologie coinvolgenti.
-            </p>
+      <SEOHead 
+        title="Laboratori Didattici sulle Api - Educazione Ambientale per Scuole"
+        description="Scopri i nostri laboratori didattici sulle api per scuole dell'infanzia, primarie e secondarie. Esperienze educative STEM che uniscono scienza, natura e sostenibilità."
+        keywords="laboratori api scuole, educazione ambientale, didattica STEM, workshop api, scuola primaria, scuola secondaria"
+      />
+
+      <div className="min-h-screen">
+        {/* Hero Section */}
+        <section className="relative py-20 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center space-y-6">
+              <Badge variant="outline" className="mb-4">
+                Educazione STEM per Scuole
+              </Badge>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                I Nostri Laboratori
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Esperienze educative coinvolgenti che avvicinano studenti di ogni età al mondo delle api, 
+                sviluppando competenze scientifiche e consapevolezza ambientale.
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Workshops Grid */}
-      <section className="py-16 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-8">
-            {workshops.map((workshop) => (
-              <Card key={workshop.id} className="shadow-card border-0 overflow-hidden hover:shadow-lg transition-smooth">
-                <div className={`h-1 ${
-                  workshop.color === 'honey' ? 'bg-gradient-honey' :
-                  workshop.color === 'forest' ? 'bg-gradient-nature' :
-                  'bg-gradient-to-r from-slate to-slate/80'
-                }`}></div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-8">
-                  {/* Main Info */}
-                  <div className="lg:col-span-2 space-y-6">
-                    <div>
-                      <div className="flex items-center gap-3 mb-3">
-                        <Badge variant="secondary" className="text-xs">
-                          {workshop.audience}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {workshop.ageRange}
-                        </Badge>
-                      </div>
-                      <h2 className="text-2xl font-bold text-slate mb-3">
-                        {workshop.title}
-                      </h2>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {workshop.description}
-                      </p>
-                    </div>
+        {/* Workshops Grid */}
+        <section className="py-16 bg-background">
+          <div className="container mx-auto px-4">
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">Caricamento laboratori...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <p className="text-destructive">{error}</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                {workshops.map((workshop) => {
+                  const extra = extraInfoBySlug[workshop.slug] || {
+                    audience: 'Tutti i livelli',
+                    ageRange: '',
+                    season: 'Tutto l\'anno',
+                    location: 'A scuola',
+                    icon: GraduationCap,
+                    color: 'from-primary to-primary/60'
+                  };
+                  const Icon = extra.icon;
 
-                    {/* Objectives */}
-                    <div>
-                      <h3 className="flex items-center text-lg font-semibold text-slate mb-3">
-                        <Target className="h-5 w-5 mr-2 text-forest" />
-                        Obiettivi didattici
-                      </h3>
-                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {workshop.objectives.map((objective, idx) => (
-                          <li key={idx} className="flex items-start space-x-2 text-sm text-muted-foreground">
-                            <span className="inline-block w-1.5 h-1.5 bg-honey rounded-full mt-2 flex-shrink-0"></span>
-                            <span>{objective}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Activities */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate mb-3">
-                        Attività principali
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {workshop.activities.map((activity, idx) => (
-                          <span 
-                            key={idx}
-                            className="inline-block px-3 py-1 bg-muted text-sm rounded-lg text-muted-foreground"
-                          >
-                            {activity}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Sidebar Info */}
-                  <div className="space-y-6">
-                    {/* Quick Stats */}
-                    <div className="bg-muted/30 rounded-2xl p-6 space-y-4">
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center space-x-2 text-muted-foreground">
-                          <Clock className="h-4 w-4" />
-                          <span>Durata</span>
-                        </div>
-                        <span className="font-medium">{workshop.duration} min</span>
-                      </div>
+                  return (
+                    <Card 
+                      key={workshop.id} 
+                      id={workshop.slug}
+                      className="group hover:shadow-xl transition-all duration-300 overflow-hidden border-2"
+                    >
+                      <div className={`h-2 bg-gradient-to-r ${extra.color}`} />
                       
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center space-x-2 text-muted-foreground">
-                          <Users className="h-4 w-4" />
-                          <span>Max studenti</span>
+                      <CardHeader className="space-y-4">
+                        <div className="flex items-start justify-between">
+                          <div className={`p-3 rounded-lg bg-gradient-to-br ${extra.color}`}>
+                            <Icon className="w-6 h-6 text-white" />
+                          </div>
+                          <Badge variant="secondary">{extra.audience}</Badge>
                         </div>
-                        <span className="font-medium">{workshop.maxStudents}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center space-x-2 text-muted-foreground">
-                          <Euro className="h-4 w-4" />
-                          <span>Prezzo</span>
+                        <div>
+                          <CardTitle className="text-2xl mb-2 group-hover:text-primary transition-colors">
+                            {workshop.title}
+                          </CardTitle>
+                          <CardDescription className="text-base">
+                            {workshop.description}
+                          </CardDescription>
                         </div>
-                        <span className="font-semibold text-forest">da €{workshop.priceFrom}/classe</span>
-                      </div>
-                    </div>
+                      </CardHeader>
 
-                    {/* Requirements */}
-                    <div>
-                      <h4 className="font-medium text-slate mb-3">Requisiti spazio</h4>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {workshop.spaceNeeds}
-                      </p>
-                      
-                      <h4 className="font-medium text-slate mb-2">Stagioni consigliate</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {workshop.season.map((s, idx) => (
-                          <Badge key={idx} variant="outline" className="text-xs">
-                            {s}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-muted-foreground" />
+                            <span>{workshop.duration_minutes} min</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Users className="w-4 h-4 text-muted-foreground" />
+                            <span>Max {workshop.max_participants} studenti</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Euro className="w-4 h-4 text-muted-foreground" />
+                            <span>€{workshop.price}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <GraduationCap className="w-4 h-4 text-muted-foreground" />
+                            <span>{extra.ageRange}</span>
+                          </div>
+                        </div>
 
-                    {/* Actions */}
-                    <div className="space-y-3">
-                      <Button asChild variant="cta" size="lg" className="w-full">
-                        <Link to="/prenota">
-                          Richiedi questo laboratorio
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                      </Button>
-                      
-                      <Button variant="outline" size="lg" className="w-full">
-                        <Download className="mr-2 h-4 w-4" />
-                        Scarica scheda PDF
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
+                        {extra.location && (
+                          <div className="flex items-start gap-2 text-sm pt-2 border-t">
+                            <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
+                            <span className="text-muted-foreground">{extra.location}</span>
+                          </div>
+                        )}
+                      </CardContent>
+
+                      <CardFooter>
+                        <Button 
+                          asChild 
+                          className="w-full group-hover:scale-105 transition-transform"
+                        >
+                          <Link to={`/prenota?workshop=${workshop.slug}`}>
+                            Richiedi questo laboratorio
+                          </Link>
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </div>
+        </section>
 
-          {/* CTA Section */}
-          <div className="mt-16 text-center bg-gradient-hero rounded-3xl p-12">
-            <h2 className="text-2xl font-bold text-slate mb-4">
-              Vuoi un programma personalizzato?
-            </h2>
-            <p className="text-slate/80 mb-6 max-w-2xl mx-auto">
-              Progettiamo laboratori su misura per le tue esigenze didattiche specifiche. 
-              Contattaci per discutere le possibilità.
-            </p>
-            <Button asChild variant="nature" size="lg">
-              <Link to="/contatti">
-                Richiedi consulenza gratuita
-              </Link>
-            </Button>
+        {/* CTA Section */}
+        <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center space-y-6">
+              <h2 className="text-3xl font-bold">
+                Vuoi personalizzare un percorso per la tua scuola?
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Possiamo creare programmi su misura che integrano più laboratori o approfondiscono tematiche specifiche.
+                Contattaci per discutere le tue esigenze didattiche.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button asChild size="lg">
+                  <Link to="/prenota">Richiedi un preventivo</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link to="/contatti">Contattaci</Link>
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </Layout>
   );
-};
-
-export default Laboratori;
+}

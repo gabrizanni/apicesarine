@@ -7,7 +7,8 @@ export interface RedirectRule {
 export const redirectRules: RedirectRule[] = [
   // Old workshop slugs to new ones
   { from: '/laboratori/api-bambini', to: '/laboratori#piccoli-impollinatori', status: 301 },
-  { from: '/laboratori/api-elementari', to: '/laboratori#api-scienza', status: 301 },
+  { from: '/laboratori/api-elementari', to: '/laboratori#api-e-scienza', status: 301 },
+  { from: '/laboratori/api-scienza', to: '/laboratori#api-e-scienza', status: 301 },
   { from: '/laboratori/api-medie', to: '/laboratori#ecosistemi-sostenibilita', status: 301 },
   
   // Old page structure
