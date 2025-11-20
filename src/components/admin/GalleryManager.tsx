@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useSequentialOrder } from '@/hooks/useSequentialOrder';
+import { OrderControls } from './OrderControls';
 import { DemoContentFilter } from './DemoContentFilter';
 import { DemoBadge } from './DemoBadge';
 import { DemoActions } from './DemoActions';
@@ -38,6 +40,7 @@ export const GalleryManager = () => {
   const [includeDemos, setIncludeDemos] = useState(true);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const { toast } = useToast();
+  const { moveUp, moveDown, getNextPosition, isReordering } = useSequentialOrder('gallery_items');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -45,7 +48,7 @@ export const GalleryManager = () => {
     image_url: '',
     image_alt: '',
     category: '',
-    display_order: 0,
+    display_order: 1,
     is_active: true
   });
 
@@ -86,7 +89,7 @@ export const GalleryManager = () => {
       image_url: '',
       image_alt: '',
       category: '',
-      display_order: 0,
+      display_order: getNextPosition(items),
       is_active: true
     });
     setEditingItem(null);
@@ -306,7 +309,7 @@ export const GalleryManager = () => {
             </div>
             <CardContent className="p-4">
               <div className="flex justify-between items-start mb-2">
-                <div>
+                <div className="flex-1">
                   <h4 className="font-semibold">
                     {item.title}
                     <DemoBadge isDemo={item.is_demo} />
@@ -315,11 +318,23 @@ export const GalleryManager = () => {
                     <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
                   )}
                 </div>
+                <OrderControls
+                  currentPosition={item.display_order}
+                  totalItems={items.length}
+                  onMoveUp={async () => {
+                    const success = await moveUp(item.id, item.display_order, items);
+                    if (success) fetchItems();
+                  }}
+                  onMoveDown={async () => {
+                    const success = await moveDown(item.id, item.display_order, items);
+                    if (success) fetchItems();
+                  }}
+                  disabled={isReordering}
+                />
               </div>
               <div className="flex items-center justify-between mt-4">
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                   {item.category && <span className="px-2 py-1 bg-muted rounded">{item.category}</span>}
-                  <span>Ordine: {item.display_order}</span>
                 </div>
                 <div className="flex space-x-2">
                   {item.is_demo ? (
