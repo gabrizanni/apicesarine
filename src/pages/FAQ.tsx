@@ -57,7 +57,7 @@ export default function FAQ() {
       <SEOHead 
         title="FAQ - Domande Frequenti sui Laboratori Didattici"
         description="Trova risposte a tutte le tue domande sui nostri laboratori didattici sulle api: prenotazioni, costi, logistica, contenuti didattici e molto altro."
-        keywords="FAQ laboratori api, domande frequenti, prenotazione laboratori, costi workshop didattici"
+        keywords={["FAQ laboratori api", "domande frequenti", "prenotazione laboratori", "costi workshop didattici"]}
       />
 
       <div className="min-h-screen bg-background">
