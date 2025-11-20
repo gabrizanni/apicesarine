@@ -78,7 +78,7 @@ export default function Laboratori() {
       <SEOHead 
         title="Laboratori Didattici sulle Api - Educazione Ambientale per Scuole"
         description="Scopri i nostri laboratori didattici sulle api per scuole dell'infanzia, primarie e secondarie. Esperienze educative STEM che uniscono scienza, natura e sostenibilità."
-        keywords="laboratori api scuole, educazione ambientale, didattica STEM, workshop api, scuola primaria, scuola secondaria"
+        keywords={["laboratori api scuole", "educazione ambientale", "didattica STEM", "workshop api", "scuola primaria", "scuola secondaria"]}
       />
 
       <div className="min-h-screen">

@@ -37,7 +37,7 @@ export default function Galleria() {
       <SEOHead 
         title="Galleria Fotografica - I Nostri Laboratori in Azione"
         description="Scopri le immagini dei nostri laboratori didattici sulle api: workshop in aula, attività pratiche, natura e biodiversità."
-        keywords="galleria foto laboratori api, workshop didattici immagini, educazione ambientale foto"
+        keywords={["galleria foto laboratori api", "workshop didattici immagini", "educazione ambientale foto"]}
       />
 
       <div className="min-h-screen bg-background">

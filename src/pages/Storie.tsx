@@ -38,7 +38,7 @@ export default function Storie() {
 
   return (
     <Layout>
-      <SEOHead title="Storie e Approfondimenti - Blog Educazione Ambientale" description="Leggi le storie dei nostri laboratori e approfondimenti scientifici sulle api." keywords="blog api educazione, storie laboratori" />
+      <SEOHead title="Storie e Approfondimenti - Blog Educazione Ambientale" description="Leggi le storie dei nostri laboratori e approfondimenti scientifici sulle api." keywords={["blog api educazione", "storie laboratori"]} />
       <div className="min-h-screen bg-background">
         <section className="py-16 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
           <div className="container mx-auto px-4">
