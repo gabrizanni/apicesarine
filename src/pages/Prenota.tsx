@@ -127,7 +127,7 @@ const Prenota = () => {
 
   const workshops = [
     { value: "piccoli-impollinatori", label: "Piccoli Impollinatori (3-6 anni)" },
-    { value: "api-scienza", label: "Api & Scienza (6-11 anni)" },
+    { value: "api-e-scienza", label: "Api & Scienza (6-11 anni)" },
     { value: "ecosistemi-sostenibilita", label: "Ecosistemi e Sostenibilità (11-14 anni)" },
     { value: "personalizzato", label: "Programma personalizzato" }
   ];
