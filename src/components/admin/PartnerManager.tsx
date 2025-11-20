@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useSequentialOrder } from '@/hooks/useSequentialOrder';
+import { OrderControls } from './OrderControls';
 import { DemoContentFilter } from './DemoContentFilter';
 import { DemoBadge } from './DemoBadge';
 import { DemoActions } from './DemoActions';
@@ -37,13 +39,14 @@ export const PartnerManager = () => {
   const [includeDemos, setIncludeDemos] = useState(true);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const { toast } = useToast();
+  const { moveUp, moveDown, getNextPosition, isReordering } = useSequentialOrder('partners');
 
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     logo_url: '',
     website_url: '',
-    display_order: 0,
+    display_order: 1,
     is_active: true
   });
 
@@ -83,7 +86,7 @@ export const PartnerManager = () => {
       description: '',
       logo_url: '',
       website_url: '',
-      display_order: 0,
+      display_order: getNextPosition(partners),
       is_active: true
     });
     setEditingPartner(null);
@@ -280,7 +283,7 @@ export const PartnerManager = () => {
                       onCheckedChange={() => toggleSelection(partner.id)}
                     />
                   )}
-                  <div>
+                  <div className="flex-1">
                     <CardTitle className="text-lg">
                       {partner.name}
                       <DemoBadge isDemo={partner.is_demo} />
@@ -290,25 +293,40 @@ export const PartnerManager = () => {
                     )}
                   </div>
                 </div>
-                <div className="flex space-x-2">
-                  {partner.is_demo ? (
-                    <DemoActions
-                      id={partner.id}
-                      isDemo={partner.is_demo}
-                      table="partners"
-                      onUpdate={fetchPartners}
-                      item={partner}
-                    />
-                  ) : (
-                    <>
-                      <Button variant="outline" size="sm" onClick={() => handleEdit(partner)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDelete(partner.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </>
-                  )}
+                <div className="flex items-center space-x-4">
+                  <OrderControls
+                    currentPosition={partner.display_order}
+                    totalItems={partners.length}
+                    onMoveUp={async () => {
+                      const success = await moveUp(partner.id, partner.display_order, partners);
+                      if (success) fetchPartners();
+                    }}
+                    onMoveDown={async () => {
+                      const success = await moveDown(partner.id, partner.display_order, partners);
+                      if (success) fetchPartners();
+                    }}
+                    disabled={isReordering}
+                  />
+                  <div className="flex space-x-2">
+                    {partner.is_demo ? (
+                      <DemoActions
+                        id={partner.id}
+                        isDemo={partner.is_demo}
+                        table="partners"
+                        onUpdate={fetchPartners}
+                        item={partner}
+                      />
+                    ) : (
+                      <>
+                        <Button variant="outline" size="sm" onClick={() => handleEdit(partner)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleDelete(partner.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </CardHeader>
@@ -321,14 +339,11 @@ export const PartnerManager = () => {
                     </a>
                   )}
                 </div>
-                <div className="flex items-center space-x-4">
-                  <span>Ordine: {partner.display_order}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    partner.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {partner.is_active ? 'Attivo' : 'Inattivo'}
-                  </span>
-                </div>
+                <span className={`px-2 py-1 rounded-full text-xs ${
+                  partner.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                }`}>
+                  {partner.is_active ? 'Attivo' : 'Inattivo'}
+                </span>
               </div>
             </CardContent>
           </Card>

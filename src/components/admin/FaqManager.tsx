@@ -11,6 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useSequentialOrder } from '@/hooks/useSequentialOrder';
+import { OrderControls } from './OrderControls';
 import { DemoContentFilter } from './DemoContentFilter';
 import { DemoBadge } from './DemoBadge';
 import { DemoActions } from './DemoActions';
@@ -37,12 +39,13 @@ export const FaqManager = () => {
   const [includeDemos, setIncludeDemos] = useState(true);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const { toast } = useToast();
+  const { moveUp, moveDown, getNextPosition, isReordering } = useSequentialOrder('faqs');
 
   const [formData, setFormData] = useState({
     question: '',
     answer: '',
     category: '',
-    display_order: 0,
+    display_order: 1,
     is_active: true
   });
 
@@ -81,7 +84,7 @@ export const FaqManager = () => {
       question: '',
       answer: '',
       category: '',
-      display_order: 0,
+      display_order: getNextPosition(faqs),
       is_active: true
     });
     setEditingFaq(null);
@@ -274,9 +277,9 @@ export const FaqManager = () => {
                     }}
                   />
                 </TableHead>
+                <TableHead className="w-24">Ordine</TableHead>
                 <TableHead>Domanda</TableHead>
                 <TableHead>Categoria</TableHead>
-                <TableHead>Ordine</TableHead>
                 <TableHead>Stato</TableHead>
                 <TableHead>Azioni</TableHead>
               </TableRow>
@@ -292,12 +295,26 @@ export const FaqManager = () => {
                       />
                     )}
                   </TableCell>
+                  <TableCell>
+                    <OrderControls
+                      currentPosition={faq.display_order}
+                      totalItems={faqs.length}
+                      onMoveUp={async () => {
+                        const success = await moveUp(faq.id, faq.display_order, faqs);
+                        if (success) fetchFaqs();
+                      }}
+                      onMoveDown={async () => {
+                        const success = await moveDown(faq.id, faq.display_order, faqs);
+                        if (success) fetchFaqs();
+                      }}
+                      disabled={isReordering}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">
                     {faq.question}
                     <DemoBadge isDemo={faq.is_demo} />
                   </TableCell>
                   <TableCell>{faq.category || '-'}</TableCell>
-                  <TableCell>{faq.display_order}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded-full text-xs ${
                       faq.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
